@@ -659,6 +659,10 @@
       const { spot, segment, detail } = bestMatch;
       const diff = spot['Dif Surv (m)'] || 0;
       const mortDiff = spot['Reduccion Mort (%)'] || 0;
+      const survWithTx = Number(spot['Surv Con Tx (m)'] || 0);
+      const survWithoutTx = Number(spot['Surv Sin Tx (m)'] || 0);
+      
+      // Benefit exists only if difference is positive (treatment improves survival)
       const isBeneficial = diff > 0;
       const isSignificant = spot['Significativo'] === 'Si';
 
@@ -671,8 +675,8 @@
         isSignificant ? '✓ Statistically significant difference.' : '⚠ Non-significant difference.'
       }`;
 
-      document.getElementById('metricSurvTx').textContent = `${Number(spot['Surv Con Tx (m)'] || 0).toFixed(1)} mo`;
-      document.getElementById('metricSurvNoTx').textContent = `${Number(spot['Surv Sin Tx (m)'] || 0).toFixed(1)} mo`;
+      document.getElementById('metricSurvTx').textContent = `${survWithTx.toFixed(1)} mo`;
+      document.getElementById('metricSurvNoTx').textContent = `${survWithoutTx.toFixed(1)} mo`;
       document.getElementById('metricDiff').textContent = `${diff >= 0 ? '+' : ''}${diff.toFixed(1)} mo`;
       document.getElementById('metricMortDiff').textContent = `${mortDiff >= 0 ? '' : ''}${mortDiff.toFixed(1)}%`;
       document.getElementById('metricPValue').textContent = (spot['p-value'] ?? 1).toFixed(4);
