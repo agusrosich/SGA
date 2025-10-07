@@ -647,6 +647,119 @@ print("\n" + "="*60)
 print("GENERANDO REPORTE PDF")
 print("="*60)
 
+# ============================================================
+# 10. SWEET SPOTS DE QUIMIO+RADIO
+# ============================================================
+
+print("\n" + "="*60)
+print("BUSCANDO 'SWEET SPOTS' PARA QUIMIO+RADIO")
+print("="*60)
+
+df_sweet = df[df['T_Advanced'] == 'T3-T4'].copy()
+
+df_sweet['Age_Group'] = pd.cut(
+    df_sweet['Age_Median'],
+    bins=[0, 50, 65, 120],
+    labels=['<50', '50-65', '>65']
+)
+
+etop = df_sweet['Histology_Unified'].value_counts().head(6).index
+df_sweet['Histology_Group'] = df_sweet['Histology_Unified'].where(
+    df_sweet['Histology_Unified'].isin(etop),
+    'Otros'
+)
+
+sweet_spots_results = []
+sweets_summary = {
+    'top': pd.DataFrame(),
+    'sig': pd.DataFrame()
+}
+sweet_spots_df = pd.DataFrame()
+
+min_total = 30
+min_treated = 10
+min_control = 10
+
+segment_definitions = [
+    ('Edad x N', ['Age_Group', 'N_Unified']),
+    ('Edad x Stage', ['Age_Group', 'Stage']),
+    ('Edad x Histologia', ['Age_Group', 'Histology_Group']),
+    ('Stage x N', ['Stage', 'N_Unified']),
+    ('Histologia x N', ['Histology_Group', 'N_Unified']),
+    ('Stage x Histologia', ['Stage', 'Histology_Group'])
+]
+
+for segment_name, cols in segment_definitions:
+    for values, subset in df_sweet.groupby(cols, dropna=False):
+        if subset.shape[0] < min_total:
+            continue
+
+        with_tx = subset[(subset['Chemotherapy_Binary'] == 1) & (subset['Radiation_Binary'] == 1)]
+        without_tx = subset[(subset['Chemotherapy_Binary'] == 0) | (subset['Radiation_Binary'] == 0)]
+
+        if len(with_tx) < min_treated or len(without_tx) < min_control:
+            continue
+
+        try:
+            lr_result = logrank_test(
+                with_tx['Survival months'],
+                without_tx['Survival months'],
+                with_tx['Event'],
+                without_tx['Event']
+            )
+        except ValueError:
+            continue
+
+        surv_gain = with_tx['Survival months'].median() - without_tx['Survival months'].median()
+        mort_gain = without_tx['Event'].mean() - with_tx['Event'].mean()
+
+        value_labels = values if isinstance(values, tuple) else (values,)
+        value_labels = [
+            str(v) if (v is not None and v == v) else 'Desconocido'
+            for v in value_labels
+        ]
+
+        sweet_spots_results.append({
+            'Segmento': segment_name,
+            'Detalle': " | ".join(value_labels),
+            'N Total': subset.shape[0],
+            'N Con Tx': len(with_tx),
+            'N Sin Tx': len(without_tx),
+            'Tx (%)': len(with_tx) / subset.shape[0] * 100,
+            'Surv Con Tx (m)': with_tx['Survival months'].median(),
+            'Surv Sin Tx (m)': without_tx['Survival months'].median(),
+            'Dif Surv (m)': surv_gain,
+            'Mort Con Tx (%)': with_tx['Event'].mean() * 100,
+            'Mort Sin Tx (%)': without_tx['Event'].mean() * 100,
+            'Reduccion Mort (%)': mort_gain * 100,
+            'p-value': lr_result.p_value,
+            'Significativo': 'Si' if (lr_result.p_value < 0.05 and surv_gain > 0) else 'No'
+        })
+
+sweet_spots_df = pd.DataFrame(sweet_spots_results)
+
+if not sweet_spots_df.empty:
+    sweet_spots_df = sweet_spots_df.sort_values(
+        ['Significativo', 'Dif Surv (m)'],
+        ascending=[False, False]
+    )
+
+    print("\n--- Sweet spots con beneficio significativo ---")
+    sweets_summary['sig'] = sweet_spots_df[
+        (sweet_spots_df['Significativo'] == 'Si') &
+        (sweet_spots_df['Dif Surv (m)'] > 0)
+    ]
+    sweets_summary['top'] = sweet_spots_df.head(15).copy()
+    if len(sweets_summary['sig']) > 0:
+        print(sweets_summary['sig'].head(15).to_string(index=False))
+    else:
+        print("No se identificaron segmentos con beneficio estadisticamente significativo con los criterios actuales.")
+
+    print("\n--- Top 15 segmentos ordenados por ganancia en supervivencia ---")
+    print(sweets_summary['top'].to_string(index=False))
+else:
+    print("No se encontraron segmentos con tamano suficiente para evaluar el beneficio combinado.")
+
 pdf_filename = 'Analisis_Cancer_Glandula_Salival.pdf'
 
 with PdfPages(pdf_filename) as pdf:
@@ -1080,121 +1193,6 @@ INTERPRETACIÓN:
     plt.close()
 
 print(f"\n✓ PDF generado: {pdf_filename}")
-
-# ============================================================
-# 10. SWEET SPOTS DE QUIMIO+RADIO
-# ============================================================
-
-print("\n" + "="*60)
-print("BUSCANDO 'SWEET SPOTS' PARA QUIMIO+RADIO")
-print("="*60)
-
-df_sweet = df[df['T_Advanced'] == 'T3-T4'].copy()
-
-df_sweet['Age_Group'] = pd.cut(
-    df_sweet['Age_Median'],
-    bins=[0, 50, 65, 120],
-    labels=['<50', '50-65', '>65']
-)
-
-etop = df_sweet['Histology_Unified'].value_counts().head(6).index
-df_sweet['Histology_Group'] = df_sweet['Histology_Unified'].where(
-    df_sweet['Histology_Unified'].isin(etop),
-    'Otros'
-)
-
-sweet_spots_results = []
-min_total = 30
-min_treated = 10
-min_control = 10
-
-segment_definitions = [
-    ('Edad x N', ['Age_Group', 'N_Unified']),
-    ('Edad x Stage', ['Age_Group', 'Stage']),
-    ('Edad x Histologia', ['Age_Group', 'Histology_Group']),
-    ('Stage x N', ['Stage', 'N_Unified']),
-    ('Histologia x N', ['Histology_Group', 'N_Unified']),
-    ('Stage x Histologia', ['Stage', 'Histology_Group'])
-]
-
-for segment_name, cols in segment_definitions:
-    for values, subset in df_sweet.groupby(cols, dropna=False):
-        if subset.shape[0] < min_total:
-            continue
-
-        with_tx = subset[(subset['Chemotherapy_Binary'] == 1) & (subset['Radiation_Binary'] == 1)]
-        without_tx = subset[(subset['Chemotherapy_Binary'] == 0) | (subset['Radiation_Binary'] == 0)]
-
-        if len(with_tx) < min_treated or len(without_tx) < min_control:
-            continue
-
-        try:
-            lr_result = logrank_test(
-                with_tx['Survival months'],
-                without_tx['Survival months'],
-                with_tx['Event'],
-                without_tx['Event']
-            )
-        except ValueError:
-            continue
-
-        surv_gain = with_tx['Survival months'].median() - without_tx['Survival months'].median()
-        mort_gain = without_tx['Event'].mean() - with_tx['Event'].mean()
-
-        value_labels = values if isinstance(values, tuple) else (values,)
-        value_labels = [
-            str(v) if (v is not None and v == v) else 'Desconocido'
-            for v in value_labels
-        ]
-
-        sweet_spots_results.append({
-            'Segmento': segment_name,
-            'Detalle': " | ".join(value_labels),
-            'N Total': subset.shape[0],
-            'N Con Tx': len(with_tx),
-            'N Sin Tx': len(without_tx),
-            'Tx (%)': len(with_tx) / subset.shape[0] * 100,
-            'Surv Con Tx (m)': with_tx['Survival months'].median(),
-            'Surv Sin Tx (m)': without_tx['Survival months'].median(),
-            'Dif Surv (m)': surv_gain,
-            'Mort Con Tx (%)': with_tx['Event'].mean() * 100,
-            'Mort Sin Tx (%)': without_tx['Event'].mean() * 100,
-            'Reduccion Mort (%)': mort_gain * 100,
-            'p-value': lr_result.p_value,
-            'Significativo': 'Si' if (lr_result.p_value < 0.05 and surv_gain > 0) else 'No'
-        })
-
-sweet_spots_df = pd.DataFrame(sweet_spots_results)
-sweets_summary = {
-    'top': pd.DataFrame(),
-    'sig': pd.DataFrame()
-}
-
-if not sweet_spots_df.empty:
-    sweet_spots_df = sweet_spots_df.sort_values(
-        ['Significativo', 'Dif Surv (m)'],
-        ascending=[False, False]
-    )
-
-    print("\n--- Sweet spots con beneficio significativo ---")
-    sweets_summary['sig'] = sweet_spots_df[
-        (sweet_spots_df['Significativo'] == 'Si') &
-        (sweet_spots_df['Dif Surv (m)'] > 0)
-    ]
-    sweets_summary['top'] = sweet_spots_df.head(15).copy()
-    if len(sweets_summary['sig']) > 0:
-        print(sweets_summary['sig'].head(15).to_string(index=False))
-    else:
-        print("No se identificaron segmentos con beneficio estadisticamente significativo con los criterios actuales.")
-
-    print("\n--- Top 15 segmentos ordenados por ganancia en supervivencia ---")
-    print(sweets_summary['top'].to_string(index=False))
-else:
-    print("No se encontraron segmentos con tamano suficiente para evaluar el beneficio combinado.")
-
-# ============================================================
-# 11. EXPORTAR RESULTADOS
-# ============================================================
 
 print("\n" + "="*60)
 print("EXPORTANDO RESULTADOS")
