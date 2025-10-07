@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -49,7 +49,6 @@
       margin: 0 auto;
     }
     
-    /* Header mejorado */
     .header {
       background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
       border-radius: 24px;
@@ -83,7 +82,6 @@
       backdrop-filter: blur(10px);
     }
     
-    /* Cards mejoradas */
     .card {
       background: var(--bg-card);
       border-radius: 20px;
@@ -121,7 +119,6 @@
       font-weight: bold;
     }
     
-    /* Grid de inputs mejorado */
     .input-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -175,7 +172,6 @@
       margin-top: 0.4rem;
     }
     
-    /* Botón mejorado */
     .btn-primary {
       width: 100%;
       padding: 1.2rem 2rem;
@@ -201,7 +197,6 @@
       transform: translateY(0);
     }
     
-    /* Resultados mejorados */
     .result {
       display: none;
       animation: fadeInUp 0.5s ease;
@@ -255,7 +250,6 @@
       margin-bottom: 2rem;
     }
     
-    /* Métricas mejoradas */
     .metrics {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -293,7 +287,6 @@
       line-height: 1;
     }
     
-    /* Tabla mejorada */
     .table-container {
       overflow-x: auto;
       margin: 2rem 0;
@@ -326,7 +319,6 @@
       background: rgba(59, 130, 246, 0.03);
     }
     
-    /* Alert mejorada */
     .alert {
       display: none;
       background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
@@ -343,7 +335,6 @@
       font-size: 1.25rem;
     }
     
-    /* Info box mejorada */
     .info-box {
       background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0.02) 100%);
       border-left: 4px solid var(--primary);
@@ -371,7 +362,6 @@
       font-weight: bold;
     }
     
-    /* Footer mejorado */
     footer {
       text-align: center;
       padding: 2rem 0;
@@ -380,7 +370,6 @@
       margin-top: 3rem;
     }
     
-    /* Responsive */
     @media (max-width: 768px) {
       .header h1 {
         font-size: 1.75rem;
@@ -506,8 +495,9 @@
       <div class="info-box">
         <ul>
           <li><strong>Survival gain:</strong> Difference in months between median with chemo+radio and without combined treatment</li>
-          <li><strong>Mortality reduction:</strong> Percentage of death events avoided with combined treatment</li>
+          <li><strong>Mortality reduction:</strong> Percentage of death events avoided with combined treatment (positive values indicate benefit)</li>
           <li><strong>Statistical significance:</strong> p &lt; 0.05 by log-rank test indicates statistically significant difference</li>
+          <li><strong>Recommendation criteria:</strong> Treatment is recommended ONLY when survival gain is positive, mortality is reduced, AND the difference is statistically significant</li>
           <li><strong>Important warning:</strong> This data is retrospective and does not substitute individualized clinical assessment</li>
         </ul>
       </div>
@@ -594,7 +584,6 @@
 
       histSelect.innerHTML = '';
       Array.from(state.histOptions).sort((a, b) => {
-        // Sort alphabetically
         return a.localeCompare(b);
       }).forEach(hist => {
         const option = document.createElement('option');
@@ -631,10 +620,19 @@
       });
 
       matches.sort((a, b) => {
+        const diffA = a.spot['Dif Surv (m)'] || 0;
+        const diffB = b.spot['Dif Surv (m)'] || 0;
+        const mortDiffA = a.spot['Reduccion Mort (%)'] || 0;
+        const mortDiffB = b.spot['Reduccion Mort (%)'] || 0;
         const sigA = a.spot.Significativo === 'Si';
         const sigB = b.spot.Significativo === 'Si';
+        
+        const hasBenefitA = sigA && diffA > 0 && mortDiffA > 0;
+        const hasBenefitB = sigB && diffB > 0 && mortDiffB > 0;
+        
+        if (hasBenefitA !== hasBenefitB) return hasBenefitB - hasBenefitA;
         if (sigA !== sigB) return sigB - sigA;
-        return (b.spot['Dif Surv (m)'] || 0) - (a.spot['Dif Surv (m)'] || 0);
+        return diffB - diffA;
       });
 
       state.matches = matches;
@@ -645,7 +643,6 @@
       const resultCard = document.getElementById('resultCard');
       const noDataCard = document.getElementById('noDataCard');
 
-      // Always hide the alert first
       noDataCard.style.display = 'none';
 
       if (!bestMatch) {
@@ -661,25 +658,34 @@
       const mortDiff = spot['Reduccion Mort (%)'] || 0;
       const survWithTx = Number(spot['Surv Con Tx (m)'] || 0);
       const survWithoutTx = Number(spot['Surv Sin Tx (m)'] || 0);
+      const pValue = spot['p-value'] ?? 1;
       
-      // Benefit exists only if difference is positive (treatment improves survival)
-      const isBeneficial = diff > 0;
       const isSignificant = spot['Significativo'] === 'Si';
+      const isBeneficial = diff > 0 && mortDiff > 0 && isSignificant;
 
       const tag = document.getElementById('recommendationTag');
-      tag.textContent = isBeneficial ? '✅ Potential Benefit Detected' : '⚠️ No Benefit Evidenced';
+      tag.textContent = isBeneficial ? '✅ Potential Benefit Detected' : '⚠️ No Clear Benefit Evidenced';
       tag.className = `status-tag ${isBeneficial ? 'success' : 'warning'}`;
 
       document.getElementById('resultTitle').textContent = `Analysis: ${segment}`;
-      document.getElementById('resultSummary').textContent = `${detail}. ${
-        isSignificant ? '✓ Statistically significant difference.' : '⚠ Non-significant difference.'
-      }`;
+      
+      let summaryText = `${detail}. `;
+      if (isBeneficial) {
+        summaryText += '✓ Statistically significant benefit with treatment.';
+      } else if (!isSignificant) {
+        summaryText += '⚠ Non-significant difference - treatment benefit not statistically proven.';
+      } else if (mortDiff <= 0) {
+        summaryText += '⚠ Treatment shows increased mortality risk.';
+      } else {
+        summaryText += '⚠ No clear survival benefit with treatment.';
+      }
+      document.getElementById('resultSummary').textContent = summaryText;
 
       document.getElementById('metricSurvTx').textContent = `${survWithTx.toFixed(1)} mo`;
       document.getElementById('metricSurvNoTx').textContent = `${survWithoutTx.toFixed(1)} mo`;
       document.getElementById('metricDiff').textContent = `${diff >= 0 ? '+' : ''}${diff.toFixed(1)} mo`;
-      document.getElementById('metricMortDiff').textContent = `${mortDiff >= 0 ? '' : ''}${mortDiff.toFixed(1)}%`;
-      document.getElementById('metricPValue').textContent = (spot['p-value'] ?? 1).toFixed(4);
+      document.getElementById('metricMortDiff').textContent = `${mortDiff >= 0 ? '+' : ''}${mortDiff.toFixed(1)}%`;
+      document.getElementById('metricPValue').textContent = pValue.toFixed(4);
 
       const tbody = document.querySelector('#detailsTable tbody');
       tbody.innerHTML = '';
