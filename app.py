@@ -1214,6 +1214,8 @@ print("✓ Importancia_Variables.csv")
 if not sweet_spots_df.empty:
     sweet_spots_df.to_csv('Sweet_Spots_QuimioRadio.csv', index=False)
     print("✓ Sweet_Spots_QuimioRadio.csv")
+    sweet_spots_df.to_json('Sweet_Spots_QuimioRadio.json', orient='records', force_ascii=False)
+    print("✓ Sweet_Spots_QuimioRadio.json")
 
 model_metrics = pd.DataFrame({
     'Modelo': list(results.keys()),

@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chemo + Radio Benefit Calculator for T3/T4</title>
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --bg-light: #f8fafc;
+      --bg-card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: rgba(15, 23, 42, 0.08);
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-light: #0f172a;
+        --bg-card: #1e293b;
+        --text: #f1f5f9;
+        --text-muted: #94a3b8;
+        --border: #334155;
+        --shadow: rgba(0, 0, 0, 0.3);
+      }
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-light);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    /* Header mejorado */
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      border-radius: 24px;
+      padding: 3rem 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 20px 60px var(--shadow);
+      color: white;
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+    
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      max-width: 800px;
+      line-height: 1.7;
+    }
+    
+    .badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      backdrop-filter: blur(10px);
+    }
+    
+    /* Cards mejoradas */
+    .card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px var(--shadow);
+      border: 1px solid var(--border);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--shadow);
+    }
+    
+    .card h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .icon {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+    }
+    
+    /* Grid de inputs mejorado */
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .input-group {
+      position: relative;
+    }
+    
+    .input-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+    
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 1rem;
+      background: var(--bg-card);
+      color: var(--text);
+      transition: all 0.3s ease;
+      appearance: none;
+    }
+    
+    .input-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 3rem;
+    }
+    
+    .input-group input:focus,
+    .input-group select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+    
+    .input-hint {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+    }
+    
+    /* Botón mejorado */
+    .btn-primary {
+      width: 100%;
+      padding: 1.2rem 2rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+    
+    /* Resultados mejorados */
+    .result {
+      display: none;
+      animation: fadeInUp 0.5s ease;
+    }
+    
+    .result.visible {
+      display: block;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .status-tag.success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+    }
+    
+    .status-tag.warning {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+    }
+    
+    .result-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    
+    .result-summary {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 2rem;
+    }
+    
+    /* Métricas mejoradas */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin: 2rem 0;
+    }
+    
+    .metric-card {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0.02) 100%);
+      padding: 1.75rem;
+      border-radius: 16px;
+      border: 2px solid var(--border);
+      transition: all 0.3s ease;
+    }
+    
+    .metric-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: 0 8px 20px var(--shadow);
+    }
+    
+    .metric-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+    
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+    }
+    
+    /* Tabla mejorada */
+    .table-container {
+      overflow-x: auto;
+      margin: 2rem 0;
+      border-radius: 16px;
+      border: 2px solid var(--border);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+      padding: 1.25rem 1.5rem;
+      text-align: left;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+    
+    td {
+      padding: 1.25rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    
+    tbody tr:hover {
+      background: rgba(59, 130, 246, 0.03);
+    }
+    
+    /* Alert mejorada */
+    .alert {
+      display: none;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
+      border: 2px solid var(--danger);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.5s ease;
+    }
+    
+    .alert h3 {
+      color: var(--danger);
+      margin-bottom: 0.75rem;
+      font-size: 1.25rem;
+    }
+    
+    /* Info box mejorada */
+    .info-box {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0.02) 100%);
+      border-left: 4px solid var(--primary);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin: 1.5rem 0;
+    }
+    
+    .info-box ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    
+    .info-box li {
+      padding: 0.5rem 0;
+      padding-left: 1.75rem;
+      position: relative;
+    }
+    
+    .info-box li:before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: bold;
+    }
+    
+    /* Footer mejorado */
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 3rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 1.75rem;
+      }
+      
+      .header p {
+        font-size: 1rem;
+      }
+      
+      .card {
+        padding: 1.5rem;
+      }
+      
+      .input-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>🏥 Therapeutic Benefit Calculator</h1>
+      <p>
+        Interactive tool based on SEER survival analysis for advanced stage (T3/T4) salivary gland tumors. 
+        Evaluates the potential benefit of chemotherapy + radiotherapy versus partial or no treatment.
+      </p>
+      <span class="badge">📊 Based on SEER data</span>
+    </header>
+
+    <section class="card">
+      <h2><span class="icon">📋</span> Patient Data</h2>
+      <div class="input-grid">
+        <div class="input-group">
+          <label for="age">Patient Age</label>
+          <input type="number" id="age" min="1" max="120" value="60" placeholder="Enter age">
+          <span class="input-hint">Grouped as: &lt;50, 50-65, &gt;65 years</span>
+        </div>
+        <div class="input-group">
+          <label for="stage">TNM Stage (T)</label>
+          <select id="stage"></select>
+          <span class="input-hint">Tumor size and extension</span>
+        </div>
+        <div class="input-group">
+          <label for="nStage">Lymph Node Involvement (N)</label>
+          <select id="nStage">
+            <option value="N0">N0 - No involvement</option>
+            <option value="N1">N1 - Ipsilateral nodes</option>
+            <option value="N2">N2 - Bilateral nodes</option>
+            <option value="N3">N3 - Nodes &gt;6cm</option>
+          </select>
+          <span class="input-hint">Lymph node status</span>
+        </div>
+        <div class="input-group">
+          <label for="histology">Histologic Type</label>
+          <select id="histology"></select>
+          <span class="input-hint">Tumor cell classification</span>
+        </div>
+      </div>
+      <button class="btn-primary" id="calculateBtn">
+        🔍 Calculate Potential Benefit
+      </button>
+    </section>
+
+    <section id="resultCard" class="card result">
+      <div id="recommendationTag" class="status-tag"></div>
+      <h2 class="result-title" id="resultTitle">Analysis Results</h2>
+      <p class="result-summary" id="resultSummary"></p>
+
+      <div class="metrics">
+        <div class="metric-card">
+          <div class="metric-label">With Chemo + Radio</div>
+          <div class="metric-value" id="metricSurvTx">-</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Without Complete Treatment</div>
+          <div class="metric-value" id="metricSurvNoTx">-</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Survival Gain</div>
+          <div class="metric-value" id="metricDiff">-</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Mortality Reduction</div>
+          <div class="metric-value" id="metricMortDiff">-</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Significance (p-value)</div>
+          <div class="metric-value" id="metricPValue">-</div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table id="detailsTable">
+          <thead>
+            <tr>
+              <th>Segment</th>
+              <th>Detail</th>
+              <th>Total N</th>
+              <th>% with Tx</th>
+              <th>N with Tx</th>
+              <th>N without Tx</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <p class="result-summary" id="contextNote"></p>
+    </section>
+
+    <section id="noDataCard" class="alert">
+      <h3>⚠️ No Data Found</h3>
+      <p>No data available for the selected combination. Try different parameters or consult the general report.</p>
+    </section>
+
+    <section class="card">
+      <h2><span class="icon">💡</span> Interpretation Guide</h2>
+      <div class="info-box">
+        <ul>
+          <li><strong>Survival gain:</strong> Difference in months between median with chemo+radio and without combined treatment</li>
+          <li><strong>Mortality reduction:</strong> Percentage of death events avoided with combined treatment</li>
+          <li><strong>Statistical significance:</strong> p &lt; 0.05 by log-rank test indicates statistically significant difference</li>
+          <li><strong>Important warning:</strong> This data is retrospective and does not substitute individualized clinical assessment</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    © <span id="year"></span> Therapeutic Benefit Calculator | SEER Data
+  </footer>
+
+  <script>
+    const DATA_URL = 'Sweet_Spots_QuimioRadio.json';
+    const ageBins = [
+      { label: '<50', min: 0, max: 49.999 },
+      { label: '50-65', min: 50, max: 65 },
+      { label: '>65', min: 65.0001, max: 200 }
+    ];
+
+    const state = {
+      sweetSpots: [],
+      segmentIndex: {},
+      histOptions: new Set(['Otros']),
+      stageOptions: new Set(),
+      matches: []
+    };
+
+    async function loadData() {
+      try {
+        const response = await fetch(DATA_URL);
+        if (!response.ok) throw new Error('No se pudo cargar el archivo JSON.');
+        const data = await response.json();
+        state.sweetSpots = data;
+        buildIndexes();
+        populateSelectors();
+      } catch (error) {
+        showAlert(`Error: ${error.message}. Make sure to serve from a local server.`);
+      }
+    }
+
+    function buildIndexes() {
+      state.segmentIndex = {};
+      state.histOptions = new Set(['Otros']);
+      state.stageOptions = new Set();
+
+      state.sweetSpots.forEach(spot => {
+        const segment = spot.Segmento;
+        const detail = (spot.Detalle || '').trim();
+        if (!segment || !detail) return;
+
+        if (!state.segmentIndex[segment]) {
+          state.segmentIndex[segment] = {};
+        }
+        state.segmentIndex[segment][detail] = spot;
+
+        const parts = detail.split('|').map(p => p.trim());
+
+        if (segment.includes('Histologia')) {
+          const histPart = segment === 'Histologia x N' ? parts[0] : parts[1];
+          if (histPart) state.histOptions.add(histPart);
+        }
+
+        if (segment.includes('Stage')) {
+          const stagePart = parts[segment === 'Stage x N' || segment === 'Stage x Histologia' ? 0 : 1];
+          if (stagePart) state.stageOptions.add(stagePart);
+        }
+      });
+
+      if (state.stageOptions.size === 0) {
+        ['Stage I', 'Stage II', 'Stage III', 'Stage IV'].forEach(s => state.stageOptions.add(s));
+      }
+    }
+
+    function populateSelectors() {
+      const stageSelect = document.getElementById('stage');
+      const histSelect = document.getElementById('histology');
+
+      stageSelect.innerHTML = '';
+      Array.from(state.stageOptions).sort().forEach(stage => {
+        const option = document.createElement('option');
+        option.value = stage;
+        option.textContent = stage;
+        stageSelect.appendChild(option);
+      });
+
+      histSelect.innerHTML = '';
+      Array.from(state.histOptions).sort((a, b) => {
+        // Sort alphabetically
+        return a.localeCompare(b);
+      }).forEach(hist => {
+        const option = document.createElement('option');
+        option.value = hist;
+        option.textContent = hist;
+        histSelect.appendChild(option);
+      });
+    }
+
+    function determineAgeGroup(age) {
+      if (isNaN(age) || age <= 0) return null;
+      for (const bin of ageBins) {
+        if (age >= bin.min && age <= bin.max) return bin.label;
+      }
+      return age > 65 ? '>65' : '<50';
+    }
+
+    function evaluateSweetSpots({ ageGroup, stage, nStage, histGroup }) {
+      const candidates = [
+        { segment: 'Edad x N', detail: `${ageGroup} | ${nStage}` },
+        { segment: 'Edad x Stage', detail: `${ageGroup} | ${stage}` },
+        { segment: 'Edad x Histologia', detail: `${ageGroup} | ${histGroup}` },
+        { segment: 'Stage x N', detail: `${stage} | ${nStage}` },
+        { segment: 'Histologia x N', detail: `${histGroup} | ${nStage}` },
+        { segment: 'Stage x Histologia', detail: `${stage} | ${histGroup}` }
+      ];
+
+      const matches = [];
+      candidates.forEach(({ segment, detail }) => {
+        const spot = state.segmentIndex[segment]?.[detail];
+        if (spot) {
+          matches.push({ spot, segment, detail });
+        }
+      });
+
+      matches.sort((a, b) => {
+        const sigA = a.spot.Significativo === 'Si';
+        const sigB = b.spot.Significativo === 'Si';
+        if (sigA !== sigB) return sigB - sigA;
+        return (b.spot['Dif Surv (m)'] || 0) - (a.spot['Dif Surv (m)'] || 0);
+      });
+
+      state.matches = matches;
+      return matches[0] || null;
+    }
+
+    function showResults(bestMatch) {
+      const resultCard = document.getElementById('resultCard');
+      const noDataCard = document.getElementById('noDataCard');
+
+      // Always hide the alert first
+      noDataCard.style.display = 'none';
+
+      if (!bestMatch) {
+        resultCard.classList.remove('visible');
+        noDataCard.style.display = 'block';
+        return;
+      }
+
+      resultCard.classList.add('visible');
+
+      const { spot, segment, detail } = bestMatch;
+      const diff = spot['Dif Surv (m)'] || 0;
+      const mortDiff = spot['Reduccion Mort (%)'] || 0;
+      const isBeneficial = diff > 0;
+      const isSignificant = spot['Significativo'] === 'Si';
+
+      const tag = document.getElementById('recommendationTag');
+      tag.textContent = isBeneficial ? '✅ Potential Benefit Detected' : '⚠️ No Benefit Evidenced';
+      tag.className = `status-tag ${isBeneficial ? 'success' : 'warning'}`;
+
+      document.getElementById('resultTitle').textContent = `Analysis: ${segment}`;
+      document.getElementById('resultSummary').textContent = `${detail}. ${
+        isSignificant ? '✓ Statistically significant difference.' : '⚠ Non-significant difference.'
+      }`;
+
+      document.getElementById('metricSurvTx').textContent = `${Number(spot['Surv Con Tx (m)'] || 0).toFixed(1)} mo`;
+      document.getElementById('metricSurvNoTx').textContent = `${Number(spot['Surv Sin Tx (m)'] || 0).toFixed(1)} mo`;
+      document.getElementById('metricDiff').textContent = `${diff >= 0 ? '+' : ''}${diff.toFixed(1)} mo`;
+      document.getElementById('metricMortDiff').textContent = `${mortDiff >= 0 ? '' : ''}${mortDiff.toFixed(1)}%`;
+      document.getElementById('metricPValue').textContent = (spot['p-value'] ?? 1).toFixed(4);
+
+      const tbody = document.querySelector('#detailsTable tbody');
+      tbody.innerHTML = '';
+      const row = document.createElement('tr');
+      [segment, detail, spot['N Total'], `${Number(spot['Tx (%)'] || 0).toFixed(1)}%`, spot['N Con Tx'], spot['N Sin Tx']]
+        .forEach(value => {
+          const cell = document.createElement('td');
+          cell.textContent = value;
+          row.appendChild(cell);
+        });
+      tbody.appendChild(row);
+
+      document.getElementById('contextNote').textContent = 
+        `📊 Segments evaluated: ${state.matches.map(m => m.segment).join(', ')}. Showing the one with greatest clinical benefit.`;
+    }
+
+    function showAlert(message) {
+      document.getElementById('resultCard').classList.remove('visible');
+      const alert = document.getElementById('noDataCard');
+      alert.style.display = 'block';
+      alert.querySelector('p').textContent = message;
+    }
+
+    document.getElementById('calculateBtn').addEventListener('click', () => {
+      const age = Number(document.getElementById('age').value);
+      const ageGroup = determineAgeGroup(age);
+      
+      if (!ageGroup) {
+        showAlert('Please enter a valid age (greater than 0).');
+        return;
+      }
+
+      const bestMatch = evaluateSweetSpots({
+        ageGroup,
+        stage: document.getElementById('stage').value,
+        nStage: document.getElementById('nStage').value,
+        histGroup: document.getElementById('histology').value
+      });
+      
+      showResults(bestMatch);
+    });
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+    loadData();
+  </script>
+</body>
+</html>
