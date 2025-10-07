@@ -1,0 +1,7 @@
+﻿services:
+  - type: static
+    name: sga-sweetspots
+    env: static
+    buildCommand: "pip install -r requirements.txt && python SGA/app.py"
+    staticPublishPath: SGA
+    pullRequestPreviewsEnabled: false

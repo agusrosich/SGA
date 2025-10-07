@@ -5,6 +5,8 @@ Análisis especial: Quimio y Radioterapia en estadios T3/T4
 VERSIÓN CORREGIDA: Grupos de riesgo basados en características basales
 """
 
+import matplotlib
+matplotlib.use('Agg')
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,6 +23,8 @@ from matplotlib.backends.backend_pdf import PdfPages
 from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 
 # Configuración de estilo
 plt.style.use('seaborn-v0_8-darkgrid')
@@ -760,7 +764,7 @@ if not sweet_spots_df.empty:
 else:
     print("No se encontraron segmentos con tamano suficiente para evaluar el beneficio combinado.")
 
-pdf_filename = 'Analisis_Cancer_Glandula_Salival.pdf'
+pdf_filename = str(BASE_DIR / 'Analisis_Cancer_Glandula_Salival.pdf')
 
 with PdfPages(pdf_filename) as pdf:
     
@@ -1198,23 +1202,23 @@ print("\n" + "="*60)
 print("EXPORTANDO RESULTADOS")
 print("="*60)
 
-or_df.to_csv('Odds_Ratios.csv', index=False)
+or_df.to_csv(BASE_DIR / 'Odds_Ratios.csv', index=False)
 print("✓ Odds_Ratios.csv")
 
 if len(subgroup_df) > 0:
-    subgroup_df.to_csv('Analisis_Subgrupos.csv', index=False)
+    subgroup_df.to_csv(BASE_DIR / 'Analisis_Subgrupos.csv', index=False)
     print("✓ Analisis_Subgrupos.csv")
 
-beneficio_df.to_csv('Beneficio_QuimioRadio_TNM.csv', index=False)
+beneficio_df.to_csv(BASE_DIR / 'Beneficio_QuimioRadio_TNM.csv', index=False)
 print("✓ Beneficio_QuimioRadio_TNM.csv")
 
-feature_importance.to_csv('Importancia_Variables.csv', index=False)
+feature_importance.to_csv(BASE_DIR / 'Importancia_Variables.csv', index=False)
 print("✓ Importancia_Variables.csv")
 
 if not sweet_spots_df.empty:
-    sweet_spots_df.to_csv('Sweet_Spots_QuimioRadio.csv', index=False)
+    sweet_spots_df.to_csv(BASE_DIR / 'Sweet_Spots_QuimioRadio.csv', index=False)
     print("✓ Sweet_Spots_QuimioRadio.csv")
-    sweet_spots_df.to_json('Sweet_Spots_QuimioRadio.json', orient='records', force_ascii=False)
+    sweet_spots_df.to_json(BASE_DIR / 'Sweet_Spots_QuimioRadio.json', orient='records', force_ascii=False)
     print("✓ Sweet_Spots_QuimioRadio.json")
 
 model_metrics = pd.DataFrame({
