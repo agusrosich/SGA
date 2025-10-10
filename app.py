@@ -73,19 +73,22 @@ df['Event_capped'] = np.where(df['Survival months'] > MAX_FOLLOW_UP_MONTHS, 0, d
 
 # Crear estadios TNM agrupados
 def assign_stage(row):
-    t = str(row['T_Unified'])
-    n = str(row['N_Unified'])
+    t_raw = str(row['T_Unified']).upper()
+    n_raw = str(row['N_Unified']).upper()
 
-    if t in ['TX', 'T88', 'T0'] or n in ['NX', 'N88']:
+    t = t_raw if isinstance(t_raw, str) else ''
+    n = n_raw if isinstance(n_raw, str) else ''
+
+    if any(prefix in t for prefix in ['TX', 'T88', 'T0']) or any(prefix in n for prefix in ['NX', 'N88']):
         return 'Unknown'
 
-    if t == 'T1' and n == 'N0':
+    if t.startswith('T1') and n.startswith('N0'):
         return 'Stage I'
-    if (t == 'T2' and n == 'N0') or (t == 'T1' and n == 'N1'):
+    if (t.startswith('T2') and n.startswith('N0')) or (t.startswith('T1') and n.startswith('N1')):
         return 'Stage II'
-    if (t == 'T3' and n == 'N0') or (t in ['T1', 'T2'] and n in ['N1', 'N2']):
+    if (t.startswith('T3') and n.startswith('N0')) or (t.startswith(('T1', 'T2')) and n.startswith(('N1', 'N2'))):
         return 'Stage III'
-    if t in ['T4A', 'T4B', 'T4NOS'] or n in ['N2', 'N3'] or (t == 'T3' and n in ['N2', 'N3']):
+    if t.startswith('T4') or n.startswith(('N2', 'N3')) or (t.startswith('T3') and n.startswith(('N2', 'N3'))):
         return 'Stage IV'
 
     return 'Stage III'
