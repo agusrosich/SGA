@@ -1,33 +1,33 @@
 Covariate,SMD_Antes,SMD_Despues,Cumple_<0.1
-Age_Median,-0.33019268437185256,-0.029563407934521342,True
-Sex_Female,-0.32106876022193165,-0.008363438474895435,True
-Sex_Male,0.32106876022193176,0.0083634384748955,True
-N_Unified_N0,-0.6339506406013778,0.03971883704137766,True
-N_Unified_N1,-0.08752518696806208,-0.04456435711924642,True
-N_Unified_N2,0.4418792814105777,-0.03560121473821049,True
-N_Unified_N3,0.38309935490906094,0.036438122211410365,True
-Histology_Unified_Acinar cell carcinoma,-0.15925860681781825,-0.017865488143077916,True
-Histology_Unified_Adenocarcinoma,0.1445399305518136,0.01659632994586476,True
-Histology_Unified_Adenoid cystic carcinoma,-0.09315255158351297,-0.02362885303329576,True
+Age_Median,-0.33019268437185256,0.0029017327203999686,True
+Sex_Female,-0.32106876022193165,0.008408714562878917,True
+Sex_Male,0.32106876022193176,-0.008408714562878719,True
+N_Unified_N0,-0.6339506406013778,0.0,True
+N_Unified_N1,-0.08752518696806208,0.011543529203600552,True
+N_Unified_N2,0.4418792814105777,-0.06398784511105583,True
+N_Unified_N3,0.38309935490906094,0.07403836057773369,True
+Histology_Unified_Acinar cell carcinoma,-0.15925860681781825,-0.03501489652837988,True
+Histology_Unified_Adenocarcinoma,0.1445399305518136,0.04182600124843813,True
+Histology_Unified_Adenoid cystic carcinoma,-0.09315255158351297,-0.0904451759918588,True
 Histology_Unified_Adenosquamous carcinoma,0.05586531905489436,0.0,True
-Histology_Unified_Carcinoma NOS,0.16905820583324097,-0.011215378047944672,True
+Histology_Unified_Carcinoma NOS,0.16905820583324097,0.022917595809874687,True
 Histology_Unified_Carcinoma ex pleomorphic adenoma,-0.021100664188974546,0.0,True
-Histology_Unified_Epithelial-myoepithelial carcinoma,0.01601145037617056,0.08466890364998648,True
+Histology_Unified_Epithelial-myoepithelial carcinoma,0.01601145037617056,0.05356858924831274,True
 Histology_Unified_Mixed tumor,-0.03113813109632334,0.048593156518337594,True
 Histology_Unified_Mucinous adenocarcinoma,0.014791986967264163,0.08406627034183975,True
-Histology_Unified_Mucoepidermoid carcinoma,-0.27583375676985855,-0.02890997198657496,True
-Histology_Unified_Myoepithelial carcinoma,-0.1264946608110314,-0.03191992843641563,True
-Histology_Unified_Neuroendocrine carcinoma,0.025702489012919928,0.0,True
+Histology_Unified_Mucoepidermoid carcinoma,-0.27583375676985855,-0.014645079503303234,True
+Histology_Unified_Myoepithelial carcinoma,-0.1264946608110314,-0.059789359135327055,True
+Histology_Unified_Neuroendocrine carcinoma,0.025702489012919928,-0.03191992843641563,True
 Histology_Unified_Oncocytic carcinoma,-0.015451553519219587,0.0,True
 Histology_Unified_Sarcoma,0.055865319054894357,0.08406627034183972,True
 Histology_Unified_Small cell carcinoma,0.16879808280880987,0.07671143511969043,True
-Histology_Unified_Squamous cell carcinoma,0.10482182363120314,-0.038678367866897614,True
+Histology_Unified_Squamous cell carcinoma,0.10482182363120314,-0.030994855404608345,True
 Histology_Unified_Transitional cell carcinoma,-0.042485928866208736,-0.08406627034183974,True
-Histology_Unified_Undifferentiated carcinoma,0.046719075642911924,0.03770268914862268,True
+Histology_Unified_Undifferentiated carcinoma,0.046719075642911924,0.08429074676371703,True
 Histology_Unified_adenomas and adenocarcinomas,0.05586531905489437,0.08406627034183974,True
 Histology_Unified_adnexal and skin appendage neoplasms,-0.042485928866208736,-0.08406627034183974,True
 "Histology_Unified_cystic, mucinous and serous neoplasms",-0.06011133350408237,-0.08406627034183974,True
-"Histology_Unified_epithelial neoplasms, NOS",0.04739126020084818,0.0,True
+"Histology_Unified_epithelial neoplasms, NOS",0.04739126020084818,0.048593156518337594,True
 Histology_Unified_squamous cell neoplasms,0.07024783799697205,0.08429074676371703,True
-Stage_Stage III,-0.6602159409745847,0.047608306891044366,True
-Stage_Stage IV,0.6602159409745846,-0.047608306891044366,True
+Stage_Stage III,-0.6602159409745847,0.057386380681562814,True
+Stage_Stage IV,0.6602159409745846,-0.05738638068156289,True

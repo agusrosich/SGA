@@ -1160,7 +1160,29 @@ else:
             sweet_spots_df['p_FDR_PSM'] = np.nan
             sweet_spots_df['Sig_FDR_PSM'] = False
 
-    sweet_spots_df = sweet_spots_df.sort_values('Dif Surv (m)', ascending=False)
+    sweet_spots_df['p_logrank_naive'] = sweet_spots_df['p_logrank_naive'].fillna(1.0)
+    sweet_spots_df['p_logrank_PSM'] = sweet_spots_df['p_logrank_PSM'].fillna(1.0)
+    sweet_spots_df['Best_p'] = sweet_spots_df[['p_logrank_PSM', 'p_logrank_naive']].min(axis=1)
+    sweet_spots_df['Sig_PSM_rank'] = sweet_spots_df['Sig_FDR_PSM'].astype(int)
+    sweet_spots_df['Sig_naive_rank'] = sweet_spots_df['Sig_FDR_naive'].astype(int)
+
+    def _interpret_sweet(row):
+        best_p = row['Best_p'] if not pd.isna(row['Best_p']) else 1.0
+        if row['Sig_FDR_PSM']:
+            return f"Benefit confirmed (PSM FDR<0.05, p≈{best_p:.3f})"
+        if row['Sig_FDR_naive']:
+            return f"Benefit suggested (naïve FDR<0.05, p≈{best_p:.3f})"
+        if row['Dif Surv (m)'] > 0:
+            return f"No clear benefit evidence (p≈{best_p:.3f})"
+        return f"No benefit (p≈{best_p:.3f})"
+
+    sweet_spots_df['Interpretation'] = sweet_spots_df.apply(_interpret_sweet, axis=1)
+
+    sweet_spots_df = sweet_spots_df.sort_values(
+        ['Sig_PSM_rank', 'Sig_naive_rank', 'Best_p', 'Dif Surv (m)'],
+        ascending=[False, False, True, False]
+    ).reset_index(drop=True)
+    sweet_spots_df = sweet_spots_df.drop(columns=['Sig_PSM_rank', 'Sig_naive_rank'])
 
     sweets_top = sweet_spots_df.head(15).copy()
     sweets_sig_naive = sweet_spots_df[
@@ -1623,7 +1645,7 @@ with PdfPages(pdf_filename) as pdf:
 
         if len(sweets_summary['psm']) > 0:
             table_source = sweets_summary['psm'].head(10)
-            table_display = table_source[['Segmento', 'Detalle', 'N Total', 'N PSM', 'Dif Surv PSM (m)', 'Reduccion Mort PSM (%)', 'p_FDR_PSM']].copy()
+            table_display = table_source[['Segmento', 'Detalle', 'N Total', 'N PSM', 'Dif Surv PSM (m)', 'Reduccion Mort PSM (%)', 'p_FDR_PSM', 'Interpretation']].copy()
             table_display = table_display.rename(columns={
                 'N Total': 'N total',
                 'N PSM': 'N PSM',
@@ -1631,19 +1653,20 @@ with PdfPages(pdf_filename) as pdf:
                 'Reduccion Mort PSM (%)': 'Reduccion mort PSM (%)',
                 'p_FDR_PSM': 'p_FDR PSM'
             })
+            table_display['Interpretation'] = table_display['Interpretation'].astype(str)
         elif len(sweets_summary['sig']) > 0:
             table_source = sweets_summary['sig'].head(10)
-            table_display = table_source[['Segmento', 'Detalle', 'N Total', 'Tx (%)', 'Dif Surv (m)', 'Reduccion Mort (%)', 'p_FDR_naive']].copy()
+            table_display = table_source[['Segmento', 'Detalle', 'N Total', 'Dif Surv (m)', 'Reduccion Mort (%)', 'p_FDR_naive', 'Interpretation']].copy()
             table_display = table_display.rename(columns={
                 'N Total': 'N total',
-                'Tx (%)': 'Tx (%)',
                 'Dif Surv (m)': 'Delta surv (m)',
                 'Reduccion Mort (%)': 'Reduccion mort (%)',
                 'p_FDR_naive': 'p_FDR'
             })
+            table_display['Interpretation'] = table_display['Interpretation'].astype(str)
         else:
             table_source = sweet_spots_df.head(10)
-            table_display = table_source[['Segmento', 'Detalle', 'N Total', 'Tx (%)', 'Dif Surv (m)', 'Reduccion Mort (%)', 'p_logrank_naive']].copy()
+            table_display = table_source[['Segmento', 'Detalle', 'N Total', 'Tx (%)', 'Dif Surv (m)', 'Reduccion Mort (%)', 'p_logrank_naive', 'Interpretation']].copy()
             table_display = table_display.rename(columns={
                 'N Total': 'N total',
                 'Tx (%)': 'Tx (%)',
@@ -1651,6 +1674,7 @@ with PdfPages(pdf_filename) as pdf:
                 'Reduccion Mort (%)': 'Reduccion mort (%)',
                 'p_logrank_naive': 'p log-rank'
             })
+            table_display['Interpretation'] = table_display['Interpretation'].astype(str)
 
         numeric_cols = table_display.select_dtypes(include=[float, int]).columns
         for col in numeric_cols:
