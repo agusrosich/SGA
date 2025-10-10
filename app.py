@@ -958,7 +958,7 @@ print("Justificación: literatura previa y plausibilidad biológica.")
 # PREPARAR DATOS
 # --------------------------------------------------------------
 
-df_sweet = df[df['T_Advanced'] == 'T3-T4'].copy()
+df_sweet = df.copy()
 
 df_sweet['Age_Group'] = pd.cut(
     df_sweet['Age_Median'],
