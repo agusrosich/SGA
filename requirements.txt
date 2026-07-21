@@ -5,3 +5,5 @@ seaborn
 scikit-learn
 lifelines
 scipy
+statsmodels
+python-docx

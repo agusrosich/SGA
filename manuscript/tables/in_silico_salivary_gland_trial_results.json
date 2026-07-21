@@ -1,0 +1,59 @@
+{
+  "title": "Salivary Gland Cancer In-Silico Trial Results",
+  "clinical_question": "Does adding chemotherapy to radiotherapy improve overall survival in T3/T4 salivary gland cancer?",
+  "eligible_retrospective_cohort_n": 954,
+  "primary_result": [
+    {
+      "Disease_Context": "Advanced T3/T4 salivary gland cancer",
+      "Comparison": "Concurrent chemoradiation vs radiation alone",
+      "Design": "RTOG 1008-like in-silico randomized trial",
+      "Trial_N": 252,
+      "Chemoradiation_N": 126,
+      "Radiation_Alone_N": 126,
+      "Median_OS_Chemoradiation_Months": 41.774194011202695,
+      "Median_OS_Radiation_Alone_Months": 41.50778577861991,
+      "Median_OS_Difference_Months": 0.26640823258278346,
+      "Logrank_P_Value": 0.11873544064716042,
+      "Bootstrap_Iterations": 1000,
+      "Bootstrap_Delta_OS_Mean": -0.3488695863972937,
+      "Bootstrap_Delta_OS_95CI_Lower": -3.861458771025745,
+      "Bootstrap_Delta_OS_95CI_Upper": 3.296823429412616,
+      "Probability_Delta_OS_Greater_Than_0": 0.436,
+      "Conclusion": "In-silico trial does not predict a statistically robust overall survival benefit from adding chemotherapy."
+    }
+  ],
+  "simulated_arm_characteristics": [
+    {
+      "Simulated_Arm": "Chemoradiation",
+      "N": 126,
+      "Age_Mean": 67.01190476190476,
+      "T4_Percent": 48.41269841269841,
+      "Node_Positive_Percent": 43.65079365079365,
+      "Stage_IV_Percent": 62.698412698412696,
+      "Predicted_OS_Median_Months": 41.774194011202695,
+      "Predicted_OS_Mean_Months": 42.44362757448594,
+      "Predicted_Event_Percent": 100.0
+    },
+    {
+      "Simulated_Arm": "Radiation alone",
+      "N": 126,
+      "Age_Mean": 66.55555555555556,
+      "T4_Percent": 46.82539682539682,
+      "Node_Positive_Percent": 54.761904761904766,
+      "Stage_IV_Percent": 69.84126984126983,
+      "Predicted_OS_Median_Months": 41.50778577861991,
+      "Predicted_OS_Mean_Months": 42.97299650094859,
+      "Predicted_Event_Percent": 100.0
+    }
+  ],
+  "model_performance": [
+    {
+      "Model": "Gradient boosting mortality classifier",
+      "Endpoint": "10-year capped cancer-specific mortality",
+      "Apparent_AUC": 0.8063732854920815,
+      "Cross_Validated_AUC_Mean": 0.676875177314894,
+      "Cross_Validated_AUC_SD": 0.01716802622201555,
+      "N": 954
+    }
+  ]
+}

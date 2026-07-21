@@ -1,0 +1,28 @@
+Predictive Chemotherapy Benefit Analysis
+========================================
+
+Clinical question: Does adding chemotherapy to radiotherapy improve survival in T3/T4 disease?
+Target comparison: concurrent chemoradiation vs radiation alone.
+Trial simulation: RTOG 1008-like equal-arm in-silico randomization.
+
+Eligible analysis cohort: 954 T3/T4 patients treated with radiation alone or chemoradiation.
+
+Observed comparison:
+                           Analysis_Set  Chemoradiation_N  Chemoradiation_Median_OS_Months  Chemoradiation_Cancer_Mortality_Percent  Radiation alone_N  Radiation alone_Median_OS_Months  Radiation alone_Cancer_Mortality_Percent  Logrank_P_Value  Median_OS_Difference_Months  Mortality_Reduction_Percent
+Observed T3/T4 radiation-treated cohort               283                             29.0                                51.590106                671                              30.0                                 44.113264         0.046896                         -1.0                    -7.476842
+
+Propensity-matched observed comparison:
+                   Analysis_Set  Chemoradiation_N  Chemoradiation_Median_OS_Months  Chemoradiation_Cancer_Mortality_Percent  Radiation alone_N  Radiation alone_Median_OS_Months  Radiation alone_Cancer_Mortality_Percent  Logrank_P_Value  Median_OS_Difference_Months  Mortality_Reduction_Percent
+Propensity-score matched cohort               149                             27.0                                48.993289                149                              27.0                                 46.308725         0.788261                          0.0                    -2.684564
+
+Predictive model performance:
+                                 Model                                 Endpoint  Apparent_AUC  Cross_Validated_AUC_Mean  Cross_Validated_AUC_SD   N
+Gradient boosting mortality classifier 10-year capped cancer-specific mortality      0.806373                  0.676875                0.017168 954
+
+In-silico trial result:
+                                   Design  Trial_N  Chemoradiation_N  Radiation_Alone_N  Median_OS_Chemoradiation_Months  Median_OS_Radiation_Alone_Months  Median_OS_Difference_Months  Logrank_P_Value  Bootstrap_Iterations  Bootstrap_Delta_OS_Mean  Bootstrap_Delta_OS_95CI_Lower  Bootstrap_Delta_OS_95CI_Upper  Probability_Delta_OS_Greater_Than_0
+RTOG 1008-like in-silico randomized trial      252               126                126                        41.774194                         41.507786                     0.266408         0.118735                  1000                 -0.34887                      -3.861459                       3.296823                                0.436
+
+Interpretation note:
+This is a retrospective predictive simulation, not causal proof. Results should be reported as hypothesis-generating
+and require external validation or prospective confirmation.
