@@ -1,0 +1,2 @@
+Estimand,Population,N,Treated_N,Control_N,RMST_No_Chemotherapy_Months,RMST_Chemotherapy_Months,Delta_RMST_Months,CI95_Lower,CI95_Upper,P_Value_RMST,Survival_Difference_5y,P_Value_Survival_5y,Survival_Difference_10y,P_Value_Survival_10y,Reverse_KM_Median_Followup_Months,Bootstrap_Successful
+ATE: difference in 10-year RMST,"T3/T4, known N, radiotherapy recorded",954,283,671,67.07875953310058,64.78382400273748,-2.294935530363107,-9.641690345486158,5.978395076381348,0.5801391551325914,-0.022217890752747882,0.5806612033211678,-0.021765516655947725,0.5778873842857895,86.0,1000

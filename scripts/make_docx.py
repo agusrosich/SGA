@@ -71,7 +71,7 @@ def add_markdown_line(document: Document, line: str, base_dir: Path) -> None:
         if image_path.exists():
             document.add_picture(str(image_path), width=Inches(6.2))
             if caption:
-                document.add_paragraph(caption)
+                document.add_paragraph(caption, style="Caption")
         else:
             document.add_paragraph(f"[Missing figure: {image_path}]")
         return
@@ -82,7 +82,26 @@ def add_markdown_line(document: Document, line: str, base_dir: Path) -> None:
         add_csv_table(document, base_dir / table_ref.group(1))
         return
 
-    document.add_paragraph(stripped)
+    if re.match(r"^(?:Table|Figure)\s+\d+\.", stripped):
+        document.add_paragraph(stripped, style="Caption")
+    else:
+        document.add_paragraph(stripped)
+
+
+def add_markdown_table(document: Document, lines: list[str]) -> None:
+    parsed = [[cell.strip() for cell in line.strip().strip("|").split("|")] for line in lines]
+    if len(parsed) > 1 and all(re.fullmatch(r":?-{3,}:?", cell) for cell in parsed[1]):
+        parsed.pop(1)
+    if not parsed:
+        return
+    table = document.add_table(rows=1, cols=len(parsed[0]))
+    table.style = "Table Grid"
+    for idx, value in enumerate(parsed[0]):
+        table.rows[0].cells[idx].text = value
+    for row in parsed[1:]:
+        cells = table.add_row().cells
+        for idx, value in enumerate(row[:len(cells)]):
+            cells[idx].text = value
 
 
 def build_docx(markdown_path: Path, output_path: Path) -> None:
@@ -94,8 +113,18 @@ def build_docx(markdown_path: Path, output_path: Path) -> None:
     section.right_margin = Inches(0.8)
 
     text = markdown_path.read_text(encoding="utf-8")
-    for line in text.splitlines():
-        add_markdown_line(document, line, markdown_path.parent)
+    lines = text.splitlines()
+    idx = 0
+    while idx < len(lines):
+        if lines[idx].strip().startswith("|"):
+            table_lines = []
+            while idx < len(lines) and lines[idx].strip().startswith("|"):
+                table_lines.append(lines[idx])
+                idx += 1
+            add_markdown_table(document, table_lines)
+            continue
+        add_markdown_line(document, lines[idx], markdown_path.parent)
+        idx += 1
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     document.save(output_path)

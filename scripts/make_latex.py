@@ -417,7 +417,8 @@ def convert_body(markdown_path: Path) -> str:
             continue
         output.append(fix_citations(inline_markup(stripped)) + "\n")
 
-    output.append(r"\end{thebibliography}")
+    if in_refs:
+        output.append(r"\end{thebibliography}")
     return "\n".join(output)
 
 

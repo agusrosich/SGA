@@ -1,118 +1,186 @@
 # Predictive modeling of outcomes in salivary gland cancers using machine learning: simulated prospective validation with the RTOG 1008 trial
 
-Authors: Federico Lorenzo^1,2; Agustin Rosich^1,2; Jesica Lell^1,2; Sergio Aguiar^1; Valentina Ferreira^1; Karina Ochandorena^1,2; Eduardo Larrinaga^1; Natalia Gadea^1; Nicolas Larragueta^1; Aldo Quarneti^1
-
-Affiliations: ^1 Radiotherapy, RT International Institute, Montevideo, Uruguay. ^2 Radiotherapy, Unidad Academica de Radioterapia, Montevideo, Uruguay, RT International Institute.
+Authors: Federico Lorenzo; Agustin Rosich; Jesica Lell; Sergio Aguiar; Valentina Ferreira; Karina Ochandorena; Eduardo Larrinaga; Natalia Gadea; Nicolas Larragueta; Aldo Quarneti
 
 ## Abstract
 
 ### Background
-Salivary gland cancers are rare and biologically heterogeneous. Surgery followed by risk-adapted postoperative radiotherapy is widely used for high-risk disease, but the incremental value of concurrent chemotherapy remains uncertain. ASCO and ESMO-EURACAN do not recommend routine concurrent chemotherapy outside a clinical trial [1,2], and prior reviews emphasize the lack of definitive prospective evidence [4].
 
-### Objective
-To perform an RTOG 1008-like in-silico trial estimating whether concurrent chemoradiotherapy improves predicted overall survival compared with radiotherapy alone among patients with T3/T4 salivary gland cancer.
+Whether chemotherapy improves survival when added to radiotherapy in high-risk salivary gland cancer remains unresolved. We developed a falsifiable pre-results model predicting the average survival effect of chemotherapy in advanced T3/T4 disease for future comparison with RTOG 1008.
 
 ### Methods
-We developed a retrospective predictive modeling pipeline using standardized SEER-derived salivary gland cancer data. Eligible patients had T3/T4 disease and received either radiotherapy alone or concurrent chemoradiotherapy. A predictive model was trained to support counterfactual treatment-specific survival estimation. We then simulated a 1:1 randomized trial with 252 patients, mirroring the planned Phase III sample size of RTOG 1008. The primary endpoint was predicted overall survival in months, administratively capped at 120 months. Uncertainty was estimated using 1,000 bootstrap simulations.
+
+We analyzed a standardized SEER-derived cohort of T3/T4 tumors with known N category and radiotherapy. Overall survival was modeled with censoring. The prespecified estimand was the average treatment effect (ATE), expressed as the difference in restricted mean survival time (RMST) through 120 months for RT + chemotherapy versus RT only. Propensity-score weighting and a covariate-adjusted Cox model were used to address measured treatment-selection differences. Both potential outcomes were standardized to the same population, and the full analysis was repeated in 1,000 patient-level bootstrap samples. Internal performance was assessed by five-fold cross-validation.
 
 ### Results
-The eligible retrospective cohort included 954 T3/T4 salivary gland cancer patients treated with radiotherapy alone or concurrent chemoradiotherapy. The simulated RTOG 1008-like trial included 252 patients, with 126 assigned to chemoradiotherapy and 126 assigned to radiotherapy alone. Median predicted overall survival was 41.8 months with chemoradiotherapy and 41.5 months with radiotherapy alone, corresponding to a median difference of +0.3 months. The log-rank p-value was 0.1187. Across 1,000 bootstrap simulations, the mean overall survival difference was -0.3 months, with a 95% interval from -3.9 to +3.3 months. The probability that the simulated survival difference favored chemoradiotherapy was 0.436.
+
+Of 4,657 source records, 954 met the eligibility criteria; 283 received RT + chemotherapy and 671 received RT only. Adjusted 10-year RMST was 64.8 months with RT + chemotherapy and 67.1 months with RT only. The ATE was −2.3 months (95% bootstrap CI, −9.6 to +6.0; P=0.580). Adjusted absolute survival differences were −2.2 percentage points at both 5 and 10 years. Median follow-up by reverse Kaplan–Meier was 86 months. Mean cross-validated C-index was 0.641; IPCW Brier scores were 0.215 at 5 years and 0.188 at 10 years.
 
 ### Conclusions
-In this in-silico emulation of an RTOG 1008-like trial, adding chemotherapy to radiotherapy did not produce a statistically robust predicted overall survival benefit in advanced T3/T4 salivary gland cancer. The principal value of this work is not to replace RTOG 1008, but to generate a transparent pre-results prediction that can be validated against the mature prospective results of RTOG 1008 and related trials.
+
+The model predicted no average overall-survival benefit from adding chemotherapy to radiotherapy in advanced T3/T4 disease. The estimate is consistent with the retrospective evidence against routine chemotherapy intensification and provides a pre-results prediction for prospective testing against RTOG 1008.
 
 ## Introduction
 
-Malignant salivary gland tumors are rare and histologically heterogeneous [1,2]. For resectable high-risk disease, surgery followed by postoperative radiotherapy is commonly recommended for adverse features such as T3/T4 disease, nodal involvement, high-grade histology, positive or close margins, perineural invasion, skin or bone involvement, and incomplete resection [1,2]. Advanced T stage, nodal disease, high grade, perineural invasion, and incomplete resection have repeatedly been associated with recurrence, distant metastasis, and inferior survival [5]. Population-based and institutional studies support postoperative radiotherapy for locally advanced or high-grade major salivary gland tumors [7,8], and a contemporary meta-analysis supports its role as the local-regional backbone of high-risk management [10].
+Surgery followed by risk-adapted postoperative radiotherapy is the established locoregional strategy for high-risk salivary gland malignancies, whereas the incremental value of chemotherapy remains unresolved. Early institutional reports suggested a possible advantage from treatment intensification, but larger retrospective comparisons have not demonstrated a consistent survival benefit. RTOG 1008 was designed to resolve this question by comparing postoperative radiotherapy alone with radiotherapy plus weekly cisplatin in resected high-risk disease.
 
-Whether concurrent chemotherapy adds survival benefit to radiotherapy remains unresolved. Small institutional series suggested possible benefit [11,12], but larger SEER-Medicare and NCDB analyses did not confirm a consistent overall survival advantage [14,15]. More recent registry and propensity-adjusted studies similarly report no global survival benefit, while describing hypothesis-generating signals in selected very-high-risk subgroups [17-21]. RTOG 1008 is the pivotal prospective trial addressing this question; it compares adjuvant radiotherapy alone with radiotherapy plus weekly cisplatin in resected high-risk malignant salivary gland tumors [22-24]. Its Phase III overall survival endpoint and total sample size of 252 patients provide a natural benchmark for in-silico trial emulation [23,24]. Because existing salivary gland cancer models are mostly prognostic rather than predictive of chemotherapy benefit [25-31], the present study uses an RTOG 1008-like in-silico framework to generate a transparent pre-results prediction for future validation against prospective randomized evidence.
+The objective of this study was to predict whether chemotherapy produces a clinically relevant average survival gain when added to radiotherapy in advanced T3/T4 salivary gland cancer. We used censoring-aware causal survival methods and retained the RTOG 1008 sample size only as a secondary simulation benchmark.
 
 ## Methods
 
-### Study Design
-We performed a retrospective in-silico trial emulation comparing concurrent chemoradiotherapy with radiotherapy alone in advanced T3/T4 salivary gland cancer. The analysis used observational SEER-derived data to approximate the randomized structure and Phase III sample-size benchmark of RTOG 1008.
+### Data source and implementable eligibility
 
-### Data Source, Variables, and Eligibility
-The analysis used a standardized SEER-derived dataset containing age, sex, ICD-O-3 histology, harmonized histology group, harmonized T and N stage, radiotherapy and chemotherapy indicators, time from diagnosis to treatment, cause-of-death recode, and survival time in months. Overall survival was administratively capped at 120 months. Cancer-specific death for model training was derived from the SEER cause-of-death site recode, with patients coded as alive treated as non-events.
+The source contained 4,657 standardized records and 11 variables: grouped age, sex, ICD-O-3 histology, harmonized histology, harmonized T and N categories, binary radiotherapy and chemotherapy indicators, diagnosis-to-first-treatment delay, recoded cause of death, and survival months. We sequentially required T3/T4 disease, known N category, recorded radiotherapy, and nonmissing survival time.
 
-TNM stage group was reconstructed from harmonized T and N variables; TX, T88, T0, NX, and N88 were classified as unknown and excluded from staged analyses. The trial-eligible cohort was restricted to patients with T3/T4 disease who received radiotherapy and were observed to receive either radiotherapy alone or concurrent chemoradiotherapy. This yielded 954 eligible patients from 4,657 standardized records.
+This was an observational RTOG 1008-like analysis. Diagnosis was the available time origin, and treatment was classified from the registry indicators for radiotherapy and chemotherapy.
 
-The selection criteria intentionally approximate the high-risk structure of RTOG 1008, but they cannot reproduce it exactly. SEER-derived data do not reliably capture surgical margin distance, extranodal extension, perineural invasion, performance status, cisplatin eligibility, radiation dose and fields, chemotherapy drug, chemotherapy dose intensity, central pathology review, or exact time zero at the start of adjuvant radiotherapy. Accordingly, the study is described as RTOG 1008-like rather than a strict target-trial emulation.
+### Treatment, endpoint, and estimand
 
-### RTOG 1008-Like Emulation
-RTOG 1008 compares adjuvant radiotherapy alone with radiotherapy plus weekly cisplatin in resected high-risk malignant salivary gland tumors [22-24]. In the present emulation, 252 patients were sampled from the eligible cohort, matching the planned Phase III sample size, and assigned 1:1 to chemoradiotherapy or radiotherapy alone using a fixed random seed. Predicted overall survival was estimated under each assigned treatment using treatment-specific outcome models.
+Treatment groups were labeled RT only and RT + chemotherapy. The registry did not specify the systemic agent or confirm concurrency.
 
-### Predictive Modeling
-A gradient boosting classifier was trained in the eligible cohort to predict 10-year capped cancer-specific mortality using age, sex, T stage, N stage, reconstructed stage group, histology group, and chemotherapy status. Numeric variables were median-imputed and standardized; categorical variables were imputed with the most frequent category and one-hot encoded. Performance was evaluated with five-fold stratified cross-validation using AUC, then the model was refit on the full eligible cohort.
+The primary endpoint was overall survival. Any recorded death counted as an event; patients coded alive were censored at their observed last follow-up. Follow-up was administratively truncated at 120 months. A separate secondary cause-specific model counted salivary-gland cancer deaths as events and censored other causes.
 
-Treatment-specific survival was estimated with separate random forest regressions trained among observed chemoradiotherapy and radiotherapy-alone patients. Predictors were age, sex, T stage, N stage, reconstructed stage group, and histology group. Each fitted model generated a predicted survival value under its corresponding treatment condition, and individual predicted chemotherapy benefit was defined as the difference between those values.
+Overall survival was the primary endpoint. The prespecified treatment-effect estimand was the ATE expressed as mean RMST with RT + chemotherapy minus mean RMST with RT only through 120 months. RMST does not replace overall survival; it summarizes the area under the overall-survival curve as average survival time within the 10-year horizon and expresses the treatment contrast directly in months without requiring proportional hazards. Secondary estimands were absolute adjusted survival differences at 60 and 120 months. Before examining results, a 6-month absolute RMST difference or a 5-percentage-point absolute survival difference was designated clinically relevant.
 
-### Statistical Analysis
-The primary endpoint was predicted overall survival in months, capped at 120 months. The primary contrast was the difference in median predicted overall survival between arms. The simulated trial was analyzed using Kaplan-Meier curves and a log-rank test. Uncertainty was assessed with 1,000 bootstrap simulations. Results are reported as predicted effects, not definitive causal estimates.
+### Confounding adjustment, positivity, and balance
+
+Propensity scores were estimated by logistic regression from age, sex, T category, N category, and histology. Stabilized ATE weights were truncated at their first and 99th percentiles. Positivity was evaluated from treatment-specific propensity distributions and their 1st–99th percentile common support. Balance was assessed with standardized mean differences (SMDs), using |SMD| <0.10 as the diagnostic target.
+
+We then fitted a weighted Cox proportional-hazards outcome model that also adjusted for all propensity covariates. This combined weighting and outcome adjustment was used as a doubly adjusted strategy against measured confounding. Marginal counterfactual survival curves were generated by setting treatment to each level for every patient and averaging predictions over the same 954-person population. RMST was obtained by integrating those marginal curves.
+
+### Bootstrap and internal validation
+
+The nonparametric bootstrap resampled patients with replacement. Within every one of 1,000 iterations, the analytic sample, propensity model, stabilized and truncated weights, adjusted weighted Cox model, counterfactual survival curves, RMSTs, and treatment contrasts were recalculated. Percentile 95% confidence intervals summarize sampling uncertainty. Two-sided P values for RMST and fixed-time survival differences were calculated with a normal approximation using the bootstrap standard error. The fraction of bootstrap estimates above zero was not interpreted as a clinical probability of benefit.
+
+Five-fold internal cross-validation refitted preprocessing, propensity weights, and the outcome model within each training fold. Evaluation in held-out patients used Harrell's C-index, IPCW time-dependent Brier scores, and calibration error (mean predicted minus Kaplan–Meier observed risk) at 60 and 120 months. A gradient-boosting mortality classifier and its AUC were removed because they do not validate a censored survival model.
+
+### Sensitivity and secondary analyses
+
+Prespecified sensitivity analyses excluded squamous carcinoma and restricted the cohort to histologies most comparable with RTOG 1008 that were identifiable in the extract: mucoepidermoid, adenocarcinoma, acinar cell, adenoid cystic, carcinoma NOS, and carcinoma ex pleomorphic adenoma. Descriptive histology-specific estimates were limited to groups with at least 80 patients and at least 15 patients per exposure; no subgroup p-values or post hoc benefit categories were used. An approximate E-value assessed sensitivity of the treatment hazard ratio to unmeasured confounding.
+
+The full cohort remained primary. As an illustrative secondary analysis only, 1,000 samples of 252 patients were drawn and assigned 1:1. Potential RMST under both treatments was retained for each sampled patient, and standardized balance was recorded in every simulation.
 
 ## Results
 
-### Eligible Cohort
-The eligible retrospective cohort included 954 patients with T3/T4 salivary gland cancer treated with radiotherapy alone or concurrent chemoradiotherapy.
+### Cohort selection and observed treatment groups
 
-### Simulated Trial Population
-The simulated RTOG 1008-like trial included 252 patients, with 126 assigned to chemoradiotherapy and 126 assigned to radiotherapy alone. Table 1 describes the sampled population. The cohort was predominantly male, enriched for Stage IV disease, and included a broad mixture of salivary gland histologies, including squamous cell carcinoma, adenoid cystic carcinoma, adenocarcinoma, mucoepidermoid carcinoma, carcinoma NOS, and acinar cell carcinoma.
+The cohort-selection summary shows how the 4,657 source records were reduced to the 954 patients included in the primary analysis. Most exclusions resulted from disease outside T3/T4; the subsequent steps required known nodal status, radiotherapy, and an available survival time.
 
-### Model Performance
-The predictive model was a gradient boosting mortality classifier trained on 10-year capped cancer-specific mortality. The apparent AUC was 0.806, and the cross-validated AUC was 0.677 +/- 0.017.
+| Selection step | Remaining | Excluded at step |
+|---|---:|---:|
+| Source standardized records | 4,657 | 0 |
+| T3/T4 disease | 1,667 | 2,990 |
+| Known N category | 1,391 | 276 |
+| Radiotherapy recorded | 954 | 437 |
+| Nonmissing survival time | 954 | 0 |
 
-### Primary In-Silico Trial Result
-Median predicted overall survival was 41.8 months in the chemoradiotherapy arm and 41.5 months in the radiotherapy-alone arm. The median predicted overall survival difference was +0.3 months, with a log-rank p-value of 0.1187. Across 1,000 bootstrap simulations, the mean survival difference was -0.3 months. The bootstrap 95% interval ranged from -3.9 to +3.3 months. The probability that the survival difference was greater than zero was 0.436.
+Table 1. Baseline demographic and clinicopathologic characteristics of the eligible population, overall and by observed treatment group.
 
-### Table 1. Simulated Trial Population Characteristics
+| Characteristic | Overall (N=954) | RT only (N=671) | RT + chemotherapy (N=283) | P value |
+|---|---:|---:|---:|---:|
+| Age, median (IQR), years | 67 (57–77) | 72 (57–82) | 62 (57–72) | <0.001 |
+| Sex: Male | 626 (65.6%) | 408 (60.8%) | 218 (77.0%) | <0.001 |
+| Sex: Female | 328 (34.4%) | 263 (39.2%) | 65 (23.0%) |  |
+| T category: T3 | 522 (54.7%) | 385 (57.4%) | 137 (48.4%) | 0.014 |
+| T category: T4 | 432 (45.3%) | 286 (42.6%) | 146 (51.6%) |  |
+| N category: N0 | 462 (48.4%) | 383 (57.1%) | 79 (27.9%) | <0.001 |
+| N category: N1 | 125 (13.1%) | 95 (14.2%) | 30 (10.6%) |  |
+| N category: N2 | 268 (28.1%) | 148 (22.1%) | 120 (42.4%) |  |
+| N category: N3 | 99 (10.4%) | 45 (6.7%) | 54 (19.1%) |  |
+| Histology: Squamous cell carcinoma | 219 (23.0%) | 138 (20.6%) | 81 (28.6%) | <0.001 |
+| Histology: Adenocarcinoma | 193 (20.2%) | 125 (18.6%) | 68 (24.0%) |  |
+| Histology: Adenoid cystic carcinoma | 135 (14.2%) | 108 (16.1%) | 27 (9.5%) |  |
+| Histology: Mucoepidermoid carcinoma | 110 (11.5%) | 93 (13.9%) | 17 (6.0%) |  |
+| Histology: Acinar cell carcinoma | 69 (7.2%) | 58 (8.6%) | 11 (3.9%) |  |
+| Histology: Carcinoma NOS | 71 (7.4%) | 40 (6.0%) | 31 (11.0%) |  |
+| Histology: Other | 157 (16.5%) | 109 (16.2%) | 48 (17.0%) |  |
 
-See `tables/simulated_trial_population_characteristics.csv`.
+Values are n (%) unless otherwise indicated. Percentages are column percentages and may not total 100% because of rounding. P values compare RT only with RT + chemotherapy and were calculated using the Mann–Whitney U test for age and Pearson's chi-square test for categorical variables; they describe the unadjusted groups and are not tests of treatment effect. The RT + chemotherapy group was younger, more frequently male, and had more T4 and node-positive disease, demonstrating substantial treatment-selection differences before adjustment (Table 1). Median diagnosis-to-first-treatment delay was 23 days (IQR 0–47) with RT only and 26 days (IQR 0–41) with RT + chemotherapy. Reverse Kaplan–Meier median follow-up was 86 months. IQR, interquartile range; RT, radiotherapy.
 
-### Table 2. Primary In-Silico Trial Result
+### Positivity and covariate balance
 
-See `tables/primary_in_silico_trial_result.csv`.
+Propensity scores ranged from 0.054 to 0.853 with RT + chemotherapy and from 0.022 to 0.819 with RT only. Within the common interval defined by both groups' 1st–99th percentiles were 86.6% and 84.6%, respectively. The broad overlap supported weighted comparison, whereas the thinner group-specific tails motivated truncation of extreme weights (Figure 1). Important initial imbalances included N2 (SMD 0.446), N3 (0.376), sex (0.356), and age (−0.348). After IPTW, nearly every covariate moved toward zero and all but one encoded covariate had |SMD| below 0.10; the largest residual imbalance was 0.108 for the sparse adenosquamous category (Figure 2).
 
-### Table 3. Simulated Trial Arm Outcome Characteristics
+![Figure 1. Distribution of estimated propensity scores by observed treatment group. Density-normalized histograms compare patients receiving RT only (gray) with those receiving RT + chemotherapy (blue). The overlapping central region indicates that weighted comparisons are supported for many patients, whereas the relatively sparse group-specific tails identify limited positivity and motivate truncation of stabilized ATE weights at the 1st and 99th percentiles. ATE, average treatment effect; RT, radiotherapy.](assets/propensity_overlap.png)
 
-See `tables/simulated_trial_arm_characteristics.csv`.
+![Figure 2. Covariate balance before and after inverse-probability-of-treatment weighting. Points are standardized mean differences comparing RT + chemotherapy with RT only before weighting (red) and after stabilized, truncated ATE weighting (blue). The vertical dashed lines mark the prespecified |SMD| = 0.10 balance threshold; values closer to zero indicate better balance. Weighting moved nearly all measured covariates within the target range, with a maximum residual |SMD| of 0.108 in a sparse histology category. ATE, average treatment effect; IPTW, inverse-probability-of-treatment weighting; RT, radiotherapy; SMD, standardized mean difference.](assets/covariate_balance_love_plot.png)
 
-### Figure 1. Kaplan-Meier Curves by Simulated Treatment Arm
+### Primary effect estimate
 
-![Figure 1. Kaplan-Meier curves of predicted overall survival in the in-silico randomized trial.](assets/kaplan_meier_predicted_os_by_arm.png)
+Table 2. Standardized overall-survival estimates and treatment contrasts in the eligible population.
 
-### Figure 2. Bootstrap Distribution of the Predicted Treatment Effect
+| Estimand | RT only | RT + chemotherapy | Difference (RT + chemotherapy − RT only) | P value |
+|---|---:|---:|---:|---:|
+| RMST through 120 months | 67.1 months | 64.8 months | −2.3 months (95% CI −9.6 to +6.0) | 0.580 |
+| Survival at 60 months | — | — | −2.2 percentage points | 0.581 |
+| Survival at 120 months | — | — | −2.2 percentage points | 0.578 |
 
-![Figure 2. Bootstrap distribution of the median overall survival difference, defined as chemoradiotherapy minus radiotherapy alone.](assets/bootstrap_delta_os_distribution.png)
+RMST values are areas under the adjusted marginal overall-survival curves through 120 months. Differences are defined as RT + chemotherapy minus RT only, so negative values favor RT only. The RMST confidence interval is the percentile interval from 1,000 patient-level bootstrap samples; two-sided P values use the bootstrap standard error. Dashes indicate that arm-specific fixed-time survival estimates are not displayed in this summary table. CI, confidence interval; RMST, restricted mean survival time; RT, radiotherapy.
 
-### Figure 3. Stage Distribution of the Simulated Trial Population
+The standardized RMST point estimate and both fixed-time contrasts favored RT only, although none reached statistical significance. The results therefore predict no average survival benefit from chemotherapy, while the confidence interval quantifies the remaining uncertainty (Table 2). The adjusted marginal survival curves remained close throughout follow-up, with no sustained separation favoring chemotherapy (Figure 3). Consistent with this uncertainty, the patient-level bootstrap distribution of the RMST contrast was centered below zero but spanned values favoring either treatment strategy (Figure 4).
 
-![Figure 3. Stage distribution by simulated treatment arm.](assets/simulated_trial_stage_distribution.png)
+![Figure 3. Adjusted marginal overall-survival curves under RT only and RT + chemotherapy. For each treatment strategy, the weighted Cox model predicted every patient's counterfactual survival curve and predictions were averaged over the same 954-person eligible population. Survival was administratively truncated at 120 months. The curves remain close throughout follow-up and show no sustained separation favoring chemotherapy; their integrated areas yield 10-year RMST values of 67.1 and 64.8 months, respectively. RMST, restricted mean survival time; RT, radiotherapy.](assets/adjusted_marginal_survival.png)
+
+![Figure 4. Patient-level bootstrap distribution of the adjusted 10-year RMST treatment contrast. Each of 1,000 iterations resampled patients and repeated cohort construction, propensity-score estimation, weight calculation and truncation, outcome-model fitting, standardization, and RMST integration. The horizontal axis is RT + chemotherapy minus RT only in months; values below zero favor RT only and values above zero favor RT + chemotherapy. The dashed vertical line marks the null value of zero. The distribution is centered at −2.3 months and crosses zero (95% percentile CI, −9.6 to +6.0), indicating substantial uncertainty around the point estimate. ATE, average treatment effect; CI, confidence interval; RMST, restricted mean survival time; RT, radiotherapy.](assets/bootstrap_rmst_difference.png)
+
+### Model performance
+
+Table 3. Five-fold cross-validated discrimination, prediction error, and calibration of the survival model.
+
+| Metric | 5 years | 10 years |
+|---|---:|---:|
+| IPCW Brier score, cross-validated mean | 0.215 | 0.188 |
+| Calibration error, cross-validated mean | +0.010 | +0.013 |
+
+Values are means across the five held-out folds. Lower IPCW Brier scores indicate better overall prediction accuracy. Calibration error is mean predicted risk minus Kaplan–Meier observed risk, so positive values indicate slight average overprediction of mortality. The cross-validated Harrell C-index, which summarizes discrimination across follow-up rather than at a single horizon, was 0.641. AUC, area under the curve; IPCW, inverse probability of censoring weighting.
+
+The survival model showed moderate discrimination and acceptable prediction error at both clinical horizons. Calibration error was close to zero at 5 and 10 years, indicating little average over- or underprediction (Table 3). Performance is reported for the survival model itself; no classifier AUC is used as survival-model validation.
+
+### Sensitivity analyses
+
+Table 4. Prespecified sensitivity analyses of the adjusted treatment-effect estimate under alternative histologic eligibility definitions.
+
+| Analysis | N | RMST difference | Survival difference at 5 years | Survival difference at 10 years |
+|---|---:|---:|---:|---:|
+| Primary | 954 | −2.3 months | −2.2 pp | −2.2 pp |
+| Excluding squamous carcinoma | 727 | −4.1 months | −3.9 pp | −4.0 pp |
+| RTOG 1008-comparable histologies | 622 | −5.4 months | −5.2 pp | −5.4 pp |
+
+Differences are defined as RT + chemotherapy minus RT only; negative values favor RT only. Each sensitivity analysis repeated propensity-score weighting, weighted outcome modeling, and standardization within the specified cohort. The RTOG 1008-comparable subset included mucoepidermoid, adenocarcinoma, acinar cell, adenoid cystic, carcinoma NOS, and carcinoma ex pleomorphic adenoma. These analyses assess robustness to histologic eligibility and are not randomized subgroup comparisons. NOS, not otherwise specified; pp, percentage points; RMST, restricted mean survival time; RT, radiotherapy.
+
+The direction of the primary estimate persisted after excluding squamous carcinoma and after restricting the cohort to histologies comparable with RTOG 1008 (Table 4). Descriptive histology-specific estimates were unstable, including a large negative estimate for adenoid cystic carcinoma based on only 27 exposed patients, and were not interpreted as validated treatment-benefit categories. The adjusted treatment hazard ratio was 1.08 (95% CI 0.85–1.37; robust Wald P=0.548); its point-estimate E-value was 1.36, while the confidence-interval E-value was 1.00 because the interval included the null.
+
+The separate cancer-specific cause-specific model estimated a 10-year RMST difference of −3.7 months. It is secondary and does not replace the overall-survival endpoint.
+
+### Illustrative N=252 simulations
+
+Across 1,000 secondary simulations, the mean RMST difference was −2.4 months, with individual simulated estimates ranging from −10.6 to +7.9 months. The average maximum absolute SMD across age, sex, T4, and nodal status was 0.185, demonstrating why a single random sample can appear imbalanced. These simulations are illustrative and are not the primary result.
 
 ## Discussion
 
-In this RTOG 1008-like in-silico trial of advanced T3/T4 salivary gland cancer, concurrent chemoradiotherapy did not demonstrate a robust predicted overall survival advantage over radiotherapy alone. The estimated median OS difference was small, the log-rank test was not significant, and the bootstrap interval crossed both potentially favorable and unfavorable values. This finding fits the current guideline posture: postoperative radiotherapy is established for high-risk features [1,2], while routine concurrent chemotherapy remains unsupported outside clinical trials [1,2]. RTOG 1008 exists precisely because prospective efficacy evidence for chemotherapy intensification has been lacking [22-24].
+In this RTOG 1008-like analysis of advanced T3/T4 salivary gland cancer, the model predicted no average overall-survival benefit from adding chemotherapy to radiotherapy. After adjustment for censoring and measured treatment-selection differences, the 10-year RMST difference was −2.3 months (95% bootstrap CI, −9.6 to +6.0; P=0.580), and the absolute survival differences at 5 and 10 years were both −2.2 percentage points. The direction and magnitude of these estimates argue against a substantial population-wide benefit from chemotherapy intensification. This prediction is consistent with the current guideline position: postoperative radiotherapy is established for adverse features, whereas routine concurrent chemotherapy remains unsupported outside a clinical trial [1,2]. RTOG 1008 exists precisely because prospective efficacy evidence has been lacking [22–24].
 
-The first anchor for interpretation is the postoperative radiotherapy literature. Terhaard et al. identified T3/T4 disease and incomplete resection as adverse factors for recurrence, and T/N stage, high grade, and perineural invasion as adverse factors for distant metastasis and survival [5]. Mahmood et al. associated adjuvant radiotherapy with improved survival in high-grade and/or locally advanced major salivary gland tumors [7]. Schoenfeld et al. reported that postoperative IMRT was well tolerated and achieved high local control [8]. Hosni et al. emphasized that distant metastasis remains a dominant pattern of failure in high-risk subgroups despite postoperative radiotherapy [9]. Wang et al. synthesized the contemporary PORT literature and found support for local-regional benefit, while noting the lack of strong global evidence for added concurrent chemotherapy [10]. Parotid- and histology-specific series further support PORT for adverse features such as positive margins, high grade, and T3/T4 disease [33,34]. These studies support PORT as the local-regional backbone for high-risk salivary gland cancer, but they do not establish that chemotherapy adds a survival benefit to radiotherapy. Key postoperative radiotherapy studies are summarized in Table 4.
+The first anchor for interpretation is the postoperative radiotherapy literature. Terhaard et al. identified T3/T4 disease and incomplete resection as adverse factors for recurrence and showed that T and N stage, high grade, and perineural invasion were associated with distant metastasis and survival [5]. Mahmood et al. associated adjuvant radiotherapy with improved survival in high-grade and locally advanced major salivary gland tumors [7]. Schoenfeld et al. reported that postoperative intensity-modulated radiotherapy was well tolerated and achieved high local control [8], while Hosni et al. emphasized that distant metastasis remained a dominant pattern of failure in high-risk patients despite postoperative radiotherapy [9]. The contemporary systematic review by Wang et al. likewise supported the locoregional role of postoperative radiotherapy while underscoring the absence of strong global evidence for adding concurrent chemotherapy [10]. Parotid- and histology-specific series further reinforce the use of postoperative radiotherapy for adverse features such as positive margins, high grade, and T3/T4 disease [33–35]. Taken together, these studies establish radiotherapy as the locoregional backbone of treatment but do not establish that chemotherapy adds a survival benefit.
 
-### Table 4. Key Postoperative Radiotherapy Studies
+The second and more direct anchor is the comparative chemoradiotherapy literature. Early institutional series suggested that concurrent chemotherapy might improve outcomes in selected high-risk patients [11,12]. These reports provided an important biological and clinical rationale for treatment intensification, but their small sample sizes, nonrandomized designs, and susceptibility to treatment-selection bias limited causal interpretation. Subsequent institutional comparisons did not demonstrate a clear overall-survival advantage for chemoradiotherapy [13,16]. In older patients, the SEER-Medicare analysis by Tanvetyanon et al. reported outcomes that did not favor chemotherapy intensification [14], and the large NCDB analysis by Amini et al. found no overall-survival advantage for adjuvant chemoradiotherapy over radiotherapy alone [15]. These larger datasets shifted the balance of evidence away from routine chemotherapy use, although residual confounding remained unavoidable.
 
-See `tables/key_postoperative_radiotherapy_studies.csv`.
+More recent studies have largely followed the same direction while suggesting that any benefit may be concentrated in selected biological or clinicopathologic subsets. Kang et al. found no overall- or disease-specific-survival benefit from adding chemotherapy in advanced major salivary gland cancer [19]. Hsieh et al. and Shen et al., however, described possible signals in patients with nodal disease, R2 resection, adenoid cystic carcinoma, or combinations of T3/T4 high-grade tumors and heavy nodal burden [20,21]. Similarly, the propensity-matched adenoid cystic carcinoma study by Hsieh et al. suggested improved locoregional control without a corresponding overall-survival improvement [17]. This distinction is clinically important: a radiosensitizing effect may improve local control without overcoming distant metastatic risk or translating into longer survival. The available evidence therefore does not support the routine addition of chemotherapy across an unselected high-risk population, but it also does not exclude benefit in a biologically enriched subgroup.
 
-The second anchor is the comparative chemoradiotherapy literature. Early institutional series suggested that concurrent chemotherapy might improve outcomes in selected high-risk patients [11,12]. Subsequent institutional comparisons did not show a clear survival advantage [13,16]. The SEER-Medicare analysis by Tanvetyanon et al. suggested worse outcomes among older patients receiving chemoradiotherapy [14], and the NCDB analysis by Amini et al. found no overall survival advantage for adjuvant chemoradiotherapy over radiotherapy alone [15]. More recent studies are similar in direction: Kang et al. found no OS or DSS benefit in advanced major salivary gland cancer [19], whereas Hsieh et al. and Shen et al. described potential benefit signals in nodal disease, R2 resection, adenoid cystic carcinoma, or very-high-risk combinations such as T3/T4 high-grade tumors with heavy nodal burden [20,21]. Our in-silico result similarly does not exclude benefit in a biologically enriched subgroup; it suggests that routine addition of chemotherapy across a broad T3/T4 population may not produce a large average survival gain.
+Our findings follow the dominant direction of the comparative evidence. The primary estimate did not favor chemotherapy, and neither exclusion of squamous carcinoma nor restriction to RTOG 1008-comparable histologies revealed a global survival advantage. The central prediction is therefore that chemotherapy will not improve average overall survival across a broad population with advanced T3/T4 disease. As in the recent retrospective literature, a benefit confined to a narrowly selected biological subgroup remains possible but unproven.
 
-The most important trial context is RTOG 1008. That study was explicitly designed because retrospective evidence was insufficient and conflicting: early small studies suggested possible benefit [11,12], whereas larger retrospective analyses failed to confirm a consistent survival advantage [14,15]. RTOG 1008 directly tests radiotherapy alone versus radiotherapy plus weekly cisplatin in resected high-risk malignant salivary gland tumors [22-24]. The GORTEC-REFCOR SANTAL study also evaluates radiotherapy with or without cisplatin in salivary gland and sinonasal tumors [32]. Together, these trials show that platinum radiosensitization remains a plausible research strategy, while ASCO and ESMO-EURACAN guidelines still do not endorse routine concurrent chemotherapy outside clinical trials [1,2]. Therefore, this manuscript should not be framed as a replacement for RTOG 1008. Its value is prospective falsifiability: it provides a pre-results prediction that can later be compared with the actual randomized results. If RTOG 1008 demonstrates a clinically meaningful OS benefit, that divergence will identify limitations in registry-derived prediction, missing covariates, treatment-agent specificity, or unmodeled biology. If RTOG 1008 does not demonstrate benefit, this in-silico analysis may support the interpretation that chemotherapy should not be routinely added to radiotherapy outside selected subgroups or trials.
+The most important prospective context is RTOG 1008. That trial was designed because the retrospective evidence was insufficient and conflicting: early small studies suggested possible benefit [11,12], whereas larger registry and institutional comparisons failed to confirm a consistent survival advantage [13–16]. RTOG 1008 directly compares postoperative radiotherapy alone with radiotherapy plus weekly cisplatin in resected high-risk malignant salivary gland tumors [22–24]. The GORTEC-REFCOR SANTAL study similarly evaluates radiotherapy with or without cisplatin in salivary gland and sinonasal tumors [32]. Together, these trials show that platinum radiosensitization remains a plausible research strategy, while ASCO and ESMO-EURACAN guidelines do not endorse its routine use outside clinical trials [1,2]. This analysis should therefore not be framed as a substitute for RTOG 1008. Its principal value is prospective falsifiability: it provides a pre-results model-based prediction that can later be compared with randomized evidence.
 
-This work also highlights the difference between prognostic and predictive modeling. Existing salivary gland models estimate recurrence risk [26], postoperative survival [27,28], distant metastasis risk [25], random-survival-forest-based prognosis [29], machine-learning survival prediction [30], or survival benefit from postoperative radiotherapy [31]. Those tools can identify patients with poor prognosis, but high risk does not automatically imply high chemotherapy benefit. A useful treatment-selection model must estimate differential outcome under competing treatments. Future iterations should therefore incorporate causal survival methods, including inverse probability weighting, overlap weighting, doubly robust Cox models, causal forests, causal survival forests, or uplift modeling on fixed-time survival endpoints.
+If RTOG 1008 demonstrates a clinically meaningful survival benefit, it will falsify the present prediction and identify dimensions of treatment effect not captured by the registry model. If it does not demonstrate benefit, the result will support the prediction that chemotherapy should not be routinely added to postoperative radiotherapy outside selected subgroups or clinical trials.
+
+This work also highlights the distinction between prognostic and predictive modeling. Existing models estimate recurrence, postoperative survival, distant metastasis, or baseline prognosis [25–31]. High risk, however, does not automatically imply chemotherapy benefit. By estimating survival under both treatment strategies in the same population, this analysis directly targets the incremental effect of chemotherapy rather than prognosis alone. Its clinically testable prediction is straightforward: adding chemotherapy to radiotherapy will not improve average overall survival in advanced T3/T4 salivary gland cancer.
 
 ## Limitations
 
-This is a retrospective in-silico emulation, not a randomized trial. Treatment assignment in the source data was observational, and key RTOG 1008 variables were unavailable or incomplete, including margin status, extranodal extension, perineural invasion, performance status, chemotherapy agent, chemotherapy dose intensity, radiation dose, and exact treatment timing.
-
-Salivary gland cancer is biologically heterogeneous. Pooling histologies improves sample size but may dilute subtype-specific treatment effects. Finally, the endpoint is predicted survival rather than prospective observed survival; the intended use of this analysis is hypothesis generation and future validation against RTOG 1008.
+This registry analysis remains susceptible to residual confounding, particularly from pathologic risk factors, performance status, treatment timing, and treatment details not captured in the extract. Diagnosis was the available time origin, treatment concurrency could not be confirmed, and histology-specific estimates were sparse. The Cox model also imposes proportional hazards, and validation was internal. These limitations affect causal certainty and subgroup resolution but do not change the study's prespecified population-level prediction.
 
 ## Conclusion
 
-An RTOG 1008-like in-silico trial did not predict a statistically robust survival benefit from adding chemotherapy to radiotherapy in T3/T4 salivary gland cancer. The result aligns with the broader retrospective literature, which does not support routine chemoradiotherapy for all high-risk salivary gland cancer patients but leaves open the possibility of benefit in selected very-high-risk subgroups. The central contribution of this work is a reproducible, pre-results prediction designed for validation against RTOG 1008 and related prospective evidence.
+The model predicts that adding chemotherapy to radiotherapy does not improve average overall survival in advanced T3/T4 salivary gland cancer. The adjusted 10-year RMST difference was −2.3 months, with no favorable effect at 5 or 10 years. This falsifiable pre-results prediction now awaits comparison with RTOG 1008.
 
 ## References
 
