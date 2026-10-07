@@ -1,0 +1,26 @@
+{
+  "part": "1 of 2 - SEER training on the broad T3/T4 eligible cohort",
+  "primary_endpoint": "Overall survival with living patients censored at last follow-up",
+  "estimand": "ATE difference in RMST through 120 months",
+  "prespecified_clinical_relevance": {
+    "absolute_RMST_months": 6.0,
+    "absolute_survival_difference": 0.05
+  },
+  "treatment": "Chemotherapy recorded vs not recorded among patients with radiotherapy recorded; concurrency cannot be established",
+  "bootstrap": "Patient-level nonparametric resampling; cohort, propensity model, weights, weighted adjusted Cox model, counterfactual curves, RMST, and contrasts are recalculated in every iteration",
+  "unavailable_fields": [
+    "surgery",
+    "postoperative radiotherapy",
+    "M stage",
+    "diagnosis year",
+    "separate treatment dates",
+    "chemotherapy agent/dose",
+    "radiation dose",
+    "margin status",
+    "ENE",
+    "PNI",
+    "performance status",
+    "major vs minor gland site"
+  ],
+  "see_also": "02_simulacion_rtog1008/simulate_rtog1008.py builds the RTOG-1008-like high-risk cohort and simulated-trial comparison on top of this analysis"
+}

@@ -1,0 +1,8 @@
+{
+  "part": "2 of 2 - RTOG 1008-like high-risk cohort and simulated-trial prediction",
+  "eligibility_source": "NCT01220583 (RTOG 1008): pathologic T3-4 OR N1-3 OR (T1-2,N0 with close/positive margin)",
+  "eligibility_applied": "T3-4 OR N1-3, known N, radiotherapy recorded, histology comparable with RTOG 1008 list",
+  "eligibility_not_verifiable": "T1-2,N0-with-margin branch: SEER does not record surgical margin status",
+  "purpose": "Falsifiable pre-results prediction for RTOG 1008's real Phase III result, not a substitute for it",
+  "simulated_trial_design": "1000 repetitions of a 1:1 random-assignment trial of N=252 (RTOG 1008's actual Phase III enrollment), drawn from this cohort's estimated individual potential outcomes"
+}

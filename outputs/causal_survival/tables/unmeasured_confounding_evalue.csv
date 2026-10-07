@@ -1,2 +1,0 @@
-Treatment_Hazard_Ratio,CI95_Lower,CI95_Upper,Robust_Wald_P_Value,E_Value_Point_Estimate,E_Value_CI_Bound,Interpretation
-1.0763025345238577,0.8469300145781679,1.367795598080746,0.5476223708204868,1.3628764539558644,1.0,"Minimum risk-ratio association an unmeasured confounder would need with treatment and outcome, conditional on measured covariates, to explain the estimate."

@@ -1,0 +1,135 @@
+% sga_manuscrito.sty -- layout of the Spanish model manuscript
+% (output/pdf/manuscrito_supervivencia_glandulas_salivales_es.pdf), reproduced in LaTeX.
+%
+% Options:
+%   spanish     Spanish hyphenation and caption names (default: English).
+%   anonymized  PRO submission copy: no authors or affiliations, double spacing,
+%               continuous line numbers.
+%
+% Compile with XeLaTeX (tools/tectonic/tectonic.exe); the body font is Arial.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{sga_manuscrito}[2026/10/06 SGA manuscript layout]
+
+\newif\ifsga@spanish
+\newif\ifsga@anonymized
+\DeclareOption{spanish}{\sga@spanishtrue}
+\DeclareOption{anonymized}{\sga@anonymizedtrue}
+\ProcessOptions\relax
+
+% ------------------------------------------------------------------ fonts, page
+\RequirePackage{fontspec}
+\setmainfont{Arial}
+\setsansfont{Arial}
+\RequirePackage{polyglossia}
+\ifsga@spanish
+  \setdefaultlanguage{spanish}
+\else
+  \setdefaultlanguage[variant=american]{english}
+\fi
+\RequirePackage[letterpaper,left=0.78in,right=0.78in,top=0.9in,bottom=0.8in,
+  headheight=12pt,headsep=0.3in,footskip=0.35in]{geometry}
+\RequirePackage[table]{xcolor}
+\definecolor{sgaheader}{HTML}{244A64}
+\definecolor{sgazebra}{HTML}{F2F6F8}
+\definecolor{sgagrid}{HTML}{D9D9D9}
+\definecolor{sgacaption}{HTML}{333333}
+\definecolor{sgaaffil}{HTML}{444444}
+\definecolor{sgagray}{HTML}{666666}
+\RequirePackage{graphicx,array,tabularx,placeins,setspace,etoolbox,float}
+\RequirePackage[shortlabels]{enumitem}
+\RequirePackage{titlesec,fancyhdr,caption}
+\RequirePackage{xurl}
+\RequirePackage[hidelinks]{hyperref}
+
+% Body text 9.5/12.5 pt, flush paragraphs separated by a small gap, as in the model.
+\renewcommand\normalsize{\fontsize{9.5pt}{12.5pt}\selectfont}
+\normalsize
+\setlength\parindent{0pt}
+\setlength\parskip{5pt plus 1pt}
+\setlength\emergencystretch{2em}
+% Single space after periods, as in the model; the hook runs after polyglossia's
+% English setup, which would otherwise restore \nonfrenchspacing.
+\AddToHook{begindocument/end}{\frenchspacing}
+\ifsga@anonymized
+  \setstretch{1.75}
+  \RequirePackage[running]{lineno}
+  \renewcommand\linenumberfont{\normalfont\scriptsize\color{sgagray}}
+  \AtBeginDocument{\linenumbers}
+\fi
+
+% ------------------------------------------------------------------ headings
+\setcounter{secnumdepth}{0}
+\titleformat{\section}{\fontsize{13pt}{16pt}\selectfont\bfseries}{}{0pt}{}
+\titlespacing*{\section}{0pt}{12pt}{2pt}
+\titleformat{\subsection}{\fontsize{10.5pt}{13pt}\selectfont\bfseries}{}{0pt}{}
+\titlespacing*{\subsection}{0pt}{8pt}{0pt}
+
+% ------------------------------------------------------------------ header, footer
+\newcommand\sga@running{}
+\newcommand\runningtitle[1]{\renewcommand\sga@running{#1}}
+\fancypagestyle{sga}{%
+  \fancyhf{}%
+  \fancyhead[L]{\fontsize{7.5pt}{9pt}\selectfont\color{sgagray}\sga@running}%
+  \fancyfoot[C]{\fontsize{8pt}{10pt}\selectfont\color{sgagray}\thepage}%
+  \renewcommand\headrulewidth{0pt}}
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyfoot[C]{\fontsize{8pt}{10pt}\selectfont\color{sgagray}\thepage}%
+  \renewcommand\headrulewidth{0pt}}
+\pagestyle{sga}
+
+% ------------------------------------------------------------------ title block
+\newcommand\sga@authors{}
+\newcommand\sga@affiliations{}
+\newcommand\manuscriptauthors[1]{\renewcommand\sga@authors{#1}}
+\newcommand\manuscriptaffiliations[1]{\renewcommand\sga@affiliations{#1}}
+\newcommand\maketitleblock[1]{%
+  \thispagestyle{plain}%
+  \ifsga@anonymized\nolinenumbers\fi
+  \begin{center}\setstretch{1}%
+    {\fontsize{17pt}{20.5pt}\selectfont\bfseries #1\par}
+    \ifsga@anonymized\else
+      \vspace{10pt}
+      {\fontsize{9pt}{12pt}\selectfont\sga@authors\par}
+      \vspace{6pt}
+      {\fontsize{8pt}{10pt}\selectfont\itshape\color{sgaaffil}\sga@affiliations\par}
+    \fi
+  \end{center}
+  \ifsga@anonymized\linenumbers\fi
+  \vspace{4pt}}
+
+% ------------------------------------------------------------------ captions
+\captionsetup{font={footnotesize,color=sgacaption},labelfont=bf,labelsep=period,
+  justification=justified,singlelinecheck=false,skip=6pt}
+\captionsetup[table]{position=top}
+\ifsga@spanish
+  \captionsetup[table]{name=Tabla}
+  \captionsetup[figure]{name=Figura}
+\fi
+\setlength\textfloatsep{14pt plus 2pt minus 4pt}
+\setlength\floatsep{14pt plus 2pt minus 4pt}
+\renewcommand\topfraction{0.9}
+\renewcommand\bottomfraction{0.8}
+\renewcommand\textfraction{0.08}
+\renewcommand\floatpagefraction{0.75}
+
+% ------------------------------------------------------------------ tables
+% Dark-blue header row with white bold text, light grid, alternating row shading.
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+% \leavevmode: a \color at the very start of a p-cell would open an empty paragraph.
+\newcommand\sgahead[1]{\centering\arraybackslash\leavevmode\color{white}\bfseries #1}
+\newenvironment{sgatable}{%
+  \footnotesize\setstretch{1}\setlength\parskip{0pt}%
+  \renewcommand\arraystretch{1.45}%
+  \arrayrulecolor{sgagrid}%
+  \rowcolors{2}{sgazebra}{white}}{}% row 1 is the header; body rows start white
+\newcommand\tablenote[1]{\par\vspace{5pt}{\footnotesize\setstretch{1}\color{sgacaption}#1\par}}
+
+% ------------------------------------------------------------------ references
+\newenvironment{sgareferences}{%
+  \footnotesize\setstretch{1}\raggedright
+  \begin{enumerate}[label={\arabic*.},leftmargin=*,itemsep=1.5pt,topsep=2pt]}%
+  {\end{enumerate}}
+
+\endinput

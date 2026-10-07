@@ -32,7 +32,7 @@ if errorlevel 1 (
   exit /b 1
 )
 
-%PYTHON_CMD% scripts\make_docx.py manuscript\manuscript.md manuscript\output\salivary_gland_causal_survival_manuscript.docx >> "%LOG_FILE%" 2>&1
+%PYTHON_CMD% scripts\make_docx.py manuscrito_final\manuscript.md manuscrito_final\output\salivary_gland_causal_survival_manuscript.docx >> "%LOG_FILE%" 2>&1
 if errorlevel 1 (
   echo DOCX generation failed. See %LOG_FILE%
   type "%LOG_FILE%"
@@ -41,7 +41,7 @@ if errorlevel 1 (
 )
 
 echo Done.
-echo Output: manuscript\output\salivary_gland_causal_survival_manuscript.docx
+echo Output: manuscrito_final\output\salivary_gland_causal_survival_manuscript.docx
 echo Log: %LOG_FILE%
 pause
 

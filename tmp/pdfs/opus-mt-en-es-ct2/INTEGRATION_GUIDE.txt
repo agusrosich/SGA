@@ -1,0 +1,26 @@
+
+// Android Integration for CTranslate2 Helsinki-NLP/opus-mt-en-es
+// Requires: CTranslate2 Java bindings + SentencePiece JNI
+
+public class CTranslate2Translator {
+    private Translator translator;
+    private SentencePieceProcessor sourceProcessor;
+    private SentencePieceProcessor targetProcessor;
+
+    public CTranslate2Translator(String modelPath, String sourceSpm, String targetSpm) {
+        translator = new Translator(modelPath);
+        sourceProcessor = new SentencePieceProcessor();
+        targetProcessor = new SentencePieceProcessor();
+        sourceProcessor.load(sourceSpm);
+        targetProcessor.load(targetSpm);
+    }
+
+    public String translate(String text) {
+        String[] srcTokens = sourceProcessor.encode(text);
+        TranslationResult result = translator.translateBatch(Arrays.asList(srcTokens)).get(0);
+        return targetProcessor.decode(result.getHypotheses().get(0));
+    }
+}
+
+// Model: Helsinki-NLP/opus-mt-en-es
+// Language pair: EN -> ES

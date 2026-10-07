@@ -1,2 +1,0 @@
-Model,Endpoint,Apparent_AUC,Cross_Validated_AUC_Mean,Cross_Validated_AUC_SD,N
-Gradient boosting mortality classifier,10-year capped cancer-specific mortality,0.8063732854920815,0.676875177314894,0.01716802622201555,954

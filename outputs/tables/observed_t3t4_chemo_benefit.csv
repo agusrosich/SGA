@@ -1,2 +1,0 @@
-Analysis_Set,Chemoradiation_N,Chemoradiation_Median_OS_Months,Chemoradiation_Cancer_Mortality_Percent,Radiation alone_N,Radiation alone_Median_OS_Months,Radiation alone_Cancer_Mortality_Percent,Logrank_P_Value,Median_OS_Difference_Months,Mortality_Reduction_Percent
-Observed T3/T4 radiation-treated cohort,283,29.0,51.590106007067135,671,30.0,44.113263785394935,0.04689557929165263,-1.0,-7.4768422216722

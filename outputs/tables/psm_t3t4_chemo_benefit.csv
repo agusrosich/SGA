@@ -1,2 +1,0 @@
-Analysis_Set,Chemoradiation_N,Chemoradiation_Median_OS_Months,Chemoradiation_Cancer_Mortality_Percent,Radiation alone_N,Radiation alone_Median_OS_Months,Radiation alone_Cancer_Mortality_Percent,Logrank_P_Value,Median_OS_Difference_Months,Mortality_Reduction_Percent
-Propensity-score matched cohort,149,27.0,48.99328859060403,149,27.0,46.308724832214764,0.7882610370982973,0.0,-2.6845637583892668

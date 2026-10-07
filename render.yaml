@@ -1,7 +1,0 @@
-﻿services:
-  - type: static
-    name: sga-sweetspots
-    env: static
-    buildCommand: "pip install -r requirements.txt && python src/parotid_chemo_benefit_pipeline.py && cp outputs/tables/publication_results.json web/publication_results.json"
-    staticPublishPath: web
-    pullRequestPreviewsEnabled: false

@@ -1,0 +1,241 @@
+{
+  "clinical_question": "Does adding chemotherapy to radiotherapy improve survival in T3/T4 disease?",
+  "trial_n": 252,
+  "observed_summary": [
+    {
+      "Analysis_Set": "Observed T3/T4 radiation-treated cohort",
+      "Chemoradiation_N": 283,
+      "Chemoradiation_Median_OS_Months": 29.0,
+      "Chemoradiation_Cancer_Mortality_Percent": 51.590106007067135,
+      "Radiation alone_N": 671,
+      "Radiation alone_Median_OS_Months": 30.0,
+      "Radiation alone_Cancer_Mortality_Percent": 44.113263785394935,
+      "Logrank_P_Value": 0.04689557929165263,
+      "Median_OS_Difference_Months": -1.0,
+      "Mortality_Reduction_Percent": -7.4768422216722
+    }
+  ],
+  "matched_summary": [
+    {
+      "Analysis_Set": "Propensity-score matched cohort",
+      "Chemoradiation_N": 149,
+      "Chemoradiation_Median_OS_Months": 27.0,
+      "Chemoradiation_Cancer_Mortality_Percent": 48.99328859060403,
+      "Radiation alone_N": 149,
+      "Radiation alone_Median_OS_Months": 27.0,
+      "Radiation alone_Cancer_Mortality_Percent": 46.308724832214764,
+      "Logrank_P_Value": 0.7882610370982973,
+      "Median_OS_Difference_Months": 0.0,
+      "Mortality_Reduction_Percent": -2.6845637583892668
+    }
+  ],
+  "model_metrics": [
+    {
+      "Model": "Gradient boosting mortality classifier",
+      "Endpoint": "10-year capped cancer-specific mortality",
+      "Apparent_AUC": 0.8063732854920815,
+      "Cross_Validated_AUC_Mean": 0.676875177314894,
+      "Cross_Validated_AUC_SD": 0.01716802622201555,
+      "N": 954
+    }
+  ],
+  "trial_results": [
+    {
+      "Design": "RTOG 1008-like in-silico randomized trial",
+      "Trial_N": 252,
+      "Chemoradiation_N": 126,
+      "Radiation_Alone_N": 126,
+      "Median_OS_Chemoradiation_Months": 41.774194011202695,
+      "Median_OS_Radiation_Alone_Months": 41.50778577861991,
+      "Median_OS_Difference_Months": 0.26640823258278346,
+      "Logrank_P_Value": 0.11873544064716042,
+      "Bootstrap_Iterations": 1000,
+      "Bootstrap_Delta_OS_Mean": -0.3488695863972937,
+      "Bootstrap_Delta_OS_95CI_Lower": -3.861458771025745,
+      "Bootstrap_Delta_OS_95CI_Upper": 3.296823429412616,
+      "Probability_Delta_OS_Greater_Than_0": 0.436
+    }
+  ],
+  "top_predicted_benefit_subgroups": [
+    {
+      "Subgroup_Type": "Predicted benefit group",
+      "Subgroup": "Large benefit",
+      "N": 161,
+      "Observed_Chemoradiation_Rate_Percent": 26.08695652173913,
+      "Mean_Predicted_Benefit_Months": 17.871236677562198,
+      "Median_Predicted_Benefit_Months": 17.816574006527436,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 100.0
+    },
+    {
+      "Subgroup_Type": "Predicted benefit group",
+      "Subgroup": "Moderate benefit",
+      "N": 157,
+      "Observed_Chemoradiation_Rate_Percent": 40.12738853503185,
+      "Mean_Predicted_Benefit_Months": 8.715374697186988,
+      "Median_Predicted_Benefit_Months": 8.72106439814251,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 100.0
+    },
+    {
+      "Subgroup_Type": "Histology",
+      "Subgroup": "Squamous cell carcinoma",
+      "N": 219,
+      "Observed_Chemoradiation_Rate_Percent": 36.986301369863014,
+      "Mean_Predicted_Benefit_Months": 8.25447888515489,
+      "Median_Predicted_Benefit_Months": 8.72106439814251,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 76.25570776255708
+    },
+    {
+      "Subgroup_Type": "N stage",
+      "Subgroup": "N3",
+      "N": 99,
+      "Observed_Chemoradiation_Rate_Percent": 54.54545454545454,
+      "Mean_Predicted_Benefit_Months": 6.7591529375471895,
+      "Median_Predicted_Benefit_Months": 6.063911651578511,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 85.85858585858585
+    },
+    {
+      "Subgroup_Type": "Histology",
+      "Subgroup": "Adenocarcinoma",
+      "N": 193,
+      "Observed_Chemoradiation_Rate_Percent": 35.233160621761655,
+      "Mean_Predicted_Benefit_Months": 3.2944479179085486,
+      "Median_Predicted_Benefit_Months": 4.764667648832251,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 70.98445595854922
+    },
+    {
+      "Subgroup_Type": "Predicted benefit group",
+      "Subgroup": "Small benefit",
+      "N": 178,
+      "Observed_Chemoradiation_Rate_Percent": 34.831460674157306,
+      "Mean_Predicted_Benefit_Months": 3.1217956919834893,
+      "Median_Predicted_Benefit_Months": 3.0431657098509106,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 100.0
+    },
+    {
+      "Subgroup_Type": "Stage group",
+      "Subgroup": "Stage IV",
+      "N": 617,
+      "Observed_Chemoradiation_Rate_Percent": 37.925445705024316,
+      "Mean_Predicted_Benefit_Months": 1.6020218392188663,
+      "Median_Predicted_Benefit_Months": 2.999632067510916,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 61.102106969205835
+    },
+    {
+      "Subgroup_Type": "T stage",
+      "Subgroup": "T4A",
+      "N": 345,
+      "Observed_Chemoradiation_Rate_Percent": 31.30434782608696,
+      "Mean_Predicted_Benefit_Months": 1.263308575032511,
+      "Median_Predicted_Benefit_Months": 2.914351909774325,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 58.84057971014492
+    },
+    {
+      "Subgroup_Type": "N stage",
+      "Subgroup": "N2",
+      "N": 268,
+      "Observed_Chemoradiation_Rate_Percent": 44.776119402985074,
+      "Mean_Predicted_Benefit_Months": 0.8481065293703303,
+      "Median_Predicted_Benefit_Months": 2.616555273165149,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 57.08955223880597
+    },
+    {
+      "Subgroup_Type": "Histology",
+      "Subgroup": "Carcinoma ex pleomorphic adenoma",
+      "N": 44,
+      "Observed_Chemoradiation_Rate_Percent": 31.818181818181817,
+      "Mean_Predicted_Benefit_Months": 0.5357477948265221,
+      "Median_Predicted_Benefit_Months": 4.711337412314176,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 61.36363636363637
+    },
+    {
+      "Subgroup_Type": "N stage",
+      "Subgroup": "N1",
+      "N": 125,
+      "Observed_Chemoradiation_Rate_Percent": 24.0,
+      "Mean_Predicted_Benefit_Months": 0.46832600654984297,
+      "Median_Predicted_Benefit_Months": 1.516974214624483,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 55.2
+    },
+    {
+      "Subgroup_Type": "T stage",
+      "Subgroup": "T4B",
+      "N": 81,
+      "Observed_Chemoradiation_Rate_Percent": 44.44444444444444,
+      "Mean_Predicted_Benefit_Months": -2.1104061532296794,
+      "Median_Predicted_Benefit_Months": 0.9015852314841055,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 51.85185185185185
+    },
+    {
+      "Subgroup_Type": "T stage",
+      "Subgroup": "T3",
+      "N": 522,
+      "Observed_Chemoradiation_Rate_Percent": 26.245210727969347,
+      "Mean_Predicted_Benefit_Months": -3.5550894644541655,
+      "Median_Predicted_Benefit_Months": -1.1601516745845064,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 47.509578544061306
+    },
+    {
+      "Subgroup_Type": "Histology",
+      "Subgroup": "Mucoepidermoid carcinoma",
+      "N": 110,
+      "Observed_Chemoradiation_Rate_Percent": 15.454545454545453,
+      "Mean_Predicted_Benefit_Months": -3.642511508091818,
+      "Median_Predicted_Benefit_Months": -0.27473174209644213,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 47.27272727272727
+    },
+    {
+      "Subgroup_Type": "Histology",
+      "Subgroup": "Carcinoma NOS",
+      "N": 71,
+      "Observed_Chemoradiation_Rate_Percent": 43.66197183098591,
+      "Mean_Predicted_Benefit_Months": -3.792709651352385,
+      "Median_Predicted_Benefit_Months": -3.7798882880032636,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 29.577464788732392
+    },
+    {
+      "Subgroup_Type": "Histology",
+      "Subgroup": "Acinar cell carcinoma",
+      "N": 69,
+      "Observed_Chemoradiation_Rate_Percent": 15.942028985507244,
+      "Mean_Predicted_Benefit_Months": -4.777005850452553,
+      "Median_Predicted_Benefit_Months": -5.333606763776558,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 43.47826086956522
+    },
+    {
+      "Subgroup_Type": "N stage",
+      "Subgroup": "N0",
+      "N": 462,
+      "Observed_Chemoradiation_Rate_Percent": 17.0995670995671,
+      "Mean_Predicted_Benefit_Months": -5.54298071100943,
+      "Median_Predicted_Benefit_Months": -3.7798882880032636,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 40.909090909090914
+    },
+    {
+      "Subgroup_Type": "Stage group",
+      "Subgroup": "Stage III",
+      "N": 337,
+      "Observed_Chemoradiation_Rate_Percent": 14.540059347181009,
+      "Mean_Predicted_Benefit_Months": -7.698264456312304,
+      "Median_Predicted_Benefit_Months": -5.504817734614491,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 35.311572700296736
+    },
+    {
+      "Subgroup_Type": "Predicted benefit group",
+      "Subgroup": "No predicted benefit",
+      "N": 458,
+      "Observed_Chemoradiation_Rate_Percent": 25.327510917030565,
+      "Mean_Predicted_Benefit_Months": -13.989367276633491,
+      "Median_Predicted_Benefit_Months": -11.295122736205997,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 0.0
+    },
+    {
+      "Subgroup_Type": "Histology",
+      "Subgroup": "Adenoid cystic carcinoma",
+      "N": 135,
+      "Observed_Chemoradiation_Rate_Percent": 20.0,
+      "Mean_Predicted_Benefit_Months": -20.53322716161262,
+      "Median_Predicted_Benefit_Months": -18.968098301834125,
+      "Patients_With_Positive_Predicted_Benefit_Percent": 3.7037037037037033
+    }
+  ]
+}
